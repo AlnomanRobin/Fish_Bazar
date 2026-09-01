@@ -35,6 +35,7 @@
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-nav-label">My Account</div>
+      <a href="profile.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">👤</span> My Profile</a>
       <a href="dashboard.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">🏠</span> Dashboard</a>
       <a href="orders.html"    class="sidebar-nav-link active"><span class="sidebar-nav-icon">📦</span> My Orders</a>
       <div class="sidebar-nav-label">Shopping</div>
@@ -92,9 +93,22 @@
 
   const user = getUser();
   if (user) {
-    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'C';
-    document.getElementById('sidebar-name').textContent   = user.name || 'Customer';
-    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'C';
+    const sidebarAvatar = document.getElementById('sidebar-avatar');
+    const navAvatar = document.getElementById('nav-avatar');
+    if (user.avatar) {
+      if (sidebarAvatar) {
+        sidebarAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        sidebarAvatar.style.background = 'transparent';
+      }
+      if (navAvatar) {
+        navAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        navAvatar.style.background = 'transparent';
+      }
+    } else {
+      if (sidebarAvatar) sidebarAvatar.textContent = user.name?.charAt(0).toUpperCase() || 'C';
+      if (navAvatar) navAvatar.textContent = user.name?.charAt(0).toUpperCase() || 'C';
+    }
+    document.getElementById('sidebar-name').textContent = user.name || 'Customer';
   }
 
   const STATUS_CLASS = { pending:'status-pending', confirmed:'status-confirmed', processing:'status-processing', shipped:'status-shipped', delivered:'status-delivered', cancelled:'status-cancelled' };

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Profile & Settings — FishBazar Seller</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo">
+      <div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div>
+      <div>FishBazar <span class="badge badge-seller" style="font-size:0.7rem;font-weight:700">SELLER</span></div>
+    </a>
+    <div class="navbar-actions">
+      <a href="../index.html" class="navbar-btn desktop-only">🏠 Storefront</a>
+      <div class="nav-dropdown">
+        <div class="navbar-avatar" id="nav-avatar" style="background:var(--seller);cursor:pointer">S</div>
+        <div class="nav-dropdown-menu">
+          <a href="profile.html" class="nav-dropdown-item">🏪 Shop Profile</a>
+          <a href="dashboard.html" class="nav-dropdown-item">📊 Dashboard</a>
+          <a href="products.html" class="nav-dropdown-item">🐟 My Products</a>
+          <div class="nav-dropdown-divider"></div>
+          <span class="nav-dropdown-item danger" data-action="logout">🚪 Logout</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout seller-dash">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-role-badge seller">🏪 Verified Seller</span>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar" style="background:var(--seller)">S</div>
+      <div>
+        <div class="sidebar-user-name" id="sidebar-name">Loading...</div>
+        <div class="sidebar-user-email" id="sidebar-shop">My Shop</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-label">Shop Management</div>
+      <a href="profile.html"     class="sidebar-nav-link active"><span class="sidebar-nav-icon">🏪</span> Shop Profile</a>
+      <a href="dashboard.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">📊</span> Dashboard</a>
+      <a href="products.html"    class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> My Products</a>
+      <a href="add-product.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">➕</span> Add New Fish</a>
+      <a href="orders.html"      class="sidebar-nav-link"><span class="sidebar-nav-icon">📦</span> Orders</a>
+      <div class="sidebar-nav-label">Storefront</div>
+      <a href="../shop.html"     class="sidebar-nav-link"><span class="sidebar-nav-icon">🌐</span> View Marketplace</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="dashboard-content">
+
+    <!-- Profile Header Card -->
+    <div class="profile-card">
+      <div class="profile-cover seller"></div>
+      <div class="profile-header-body">
+        <div class="profile-avatar-row">
+          <div class="avatar-uploader-wrap">
+            <div class="avatar-uploader seller" id="avatar-container" onclick="document.getElementById('avatar-file-input').click()" title="Click to upload owner profile picture">
+              <div class="avatar-uploader-initial" id="avatar-initial">S</div>
+              <img src="" class="avatar-uploader-img hidden" id="avatar-img" alt="Seller Photo">
+              <div class="avatar-upload-overlay">
+                <span style="font-size:1.3rem">📷</span>
+                <span>Change Photo</span>
+              </div>
+              <div class="avatar-edit-badge" title="Change Photo">✏️</div>
+            </div>
+            <input type="file" id="avatar-file-input" accept="image/*" class="hidden">
+
+            <div class="profile-meta">
+              <h1 class="profile-title-name">
+                <span id="profile-display-shop">Shop Name</span>
+                <span class="badge badge-primary" style="font-size:0.75rem">Certified Seller</span>
+              </h1>
+              <div class="profile-title-sub" id="profile-display-owner">Owner: Karim Uddin · Rajshahi</div>
+              <div style="margin-top:var(--sp-2);display:flex;gap:var(--sp-2)">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('avatar-file-input').click()">📷 Change Owner Photo</button>
+                <button type="button" class="btn btn-ghost btn-sm text-danger" id="remove-avatar-btn" onclick="removeSellerAvatar()" style="display:none;color:var(--danger)">🗑️ Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <button type="button" class="btn btn-primary btn-md" onclick="saveSellerProfile()">💾 Save All Changes</button>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="profile-tabs-nav">
+          <div class="profile-tab-item seller-tab active" onclick="switchSellerTab('shop', this)">🏪 Shop Details & Logo</div>
+          <div class="profile-tab-item seller-tab" onclick="switchSellerTab('personal', this)">👤 Owner Personal Info</div>
+          <div class="profile-tab-item seller-tab" onclick="switchSellerTab('security', this)">🔒 Security & Password</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 1: Shop Details & Logo -->
+    <div id="tab-pane-shop" class="profile-tab-pane">
+      
+      <!-- Shop Logo Uploader Card -->
+      <div class="profile-section-card" style="margin-bottom:var(--sp-6)">
+        <h3 class="profile-section-title">🎨 Shop Brand Logo (দোকানের লোগো)</h3>
+        <p class="profile-section-desc">আপনার দোকানের ব্র্যান্ডিং লোগো আপলোড করুন যা ক্রেতাদের কাছে প্রদর্শিত হবে</p>
+
+        <div class="shop-logo-card">
+          <div class="shop-logo-preview" id="shop-logo-preview-box">
+            <span class="shop-logo-placeholder" id="shop-logo-placeholder">🏪</span>
+            <img src="" class="shop-logo-img hidden" id="shop-logo-img" alt="Shop Logo">
+          </div>
+          <input type="file" id="shop-logo-file-input" accept="image/*" class="hidden">
+
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:var(--fs-md);margin-bottom:var(--sp-1)" id="logo-preview-title">Official Store Logo</div>
+            <div style="font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:var(--sp-3)">Recommended size: 500x500px (PNG, JPG, SVG). Max 3MB.</div>
+            <div class="flex gap-3">
+              <button type="button" class="btn btn-seller btn-sm" onclick="document.getElementById('shop-logo-file-input').click()">📁 Upload Shop Logo</button>
+              <button type="button" class="btn btn-ghost btn-sm text-danger" id="remove-shop-logo-btn" onclick="removeShopLogo()" style="display:none;color:var(--danger)">🗑️ Remove Logo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shop Information Form -->
+      <div class="profile-section-card">
+        <h3 class="profile-section-title">🏪 Shop Information (দোকানের বিবরণ)</h3>
+        <p class="profile-section-desc">মার্কেটপ্লেসে আপনার দোকানের সাধারণ ও ব্যবসায়িক তথ্য</p>
+
+        <form onsubmit="event.preventDefault(); saveSellerProfile();">
+          <div class="form-row" style="margin-bottom:var(--sp-4)">
+            <div class="form-group">
+              <label class="form-label" for="seller-shop-name">Shop Name (দোকানের নাম) *</label>
+              <input type="text" class="form-control" id="seller-shop-name" required placeholder="e.g. Padma Fresh Fish Depot">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="seller-shop-tagline">Shop Tagline (স্লোগান / পরিচয়)</label>
+              <input type="text" class="form-control" id="seller-shop-tagline" placeholder="e.g. তাজা নদীর মাছের বিশ্বস্ত প্রতিষ্ঠান">
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-bottom:var(--sp-4)">
+            <div class="form-group">
+              <label class="form-label" for="seller-district">Base District (মূল জেলা) *</label>
+              <select class="form-control" id="seller-district">
+                <option value="Rajshahi">Rajshahi (রাজশাহী)</option>
+                <option value="Dhaka">Dhaka (ঢাকা)</option>
+                <option value="Chittagong">Chittagong (চট্টগ্রাম)</option>
+                <option value="Chandpur">Chandpur (চাঁদপুর - পদ্মা/মেঘনা)</option>
+                <option value="Cox's Bazar">Cox's Bazar (কক্সবাজার)</option>
+                <option value="Khulna">Khulna (খুলনা - সুন্দরবন)</option>
+                <option value="Barishal">Barishal (বরিশাল)</option>
+                <option value="Sylhet">Sylhet (সিলেট)</option>
+                <option value="Mymensingh">Mymensingh (ময়মনসিংহ)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="seller-market-area">Fish Catchment / Market Area (মাছের উৎস ঘাট / বাজার)</label>
+              <input type="text" class="form-control" id="seller-market-area" placeholder="e.g. Padma River Ghat, Rajshahi Sadar">
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-bottom:var(--sp-4)">
+            <div class="form-group">
+              <label class="form-label" for="seller-bkash">Merchant bKash Number (টাকা গ্রহণের বিকাশ নম্বর)</label>
+              <input type="tel" class="form-control" id="seller-bkash" placeholder="017XXXXXXXX">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="seller-nagad">Merchant Nagad Number (নগদ নম্বর)</label>
+              <input type="tel" class="form-control" id="seller-nagad" placeholder="018XXXXXXXX">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:var(--sp-4)">
+            <label class="form-label" for="seller-address">Full Depot / Shop Address (দোকানের সম্পূর্ণ ঠিকানা)</label>
+            <textarea class="form-control" id="seller-address" rows="2" placeholder="Ghat No. 3, Padma Riverbank, Rajshahi 6000"></textarea>
+          </div>
+
+          <div class="form-group" style="margin-bottom:var(--sp-5)">
+            <label class="form-label" for="seller-bio">About the Shop & Fish Quality (দোকানের বিস্তারিত বিবরণ)</label>
+            <textarea class="form-control" id="seller-bio" rows="3" placeholder="আমরা সরাসরি পদ্মা নদী থেকে প্রতিদিন সকালে তাজা ইলিশ ও রুই মাছ সংগ্রহ করে থাকি..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-seller">Save Shop Details</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 2: Owner Personal Info -->
+    <div id="tab-pane-personal" class="profile-tab-pane hidden">
+      <div class="profile-section-card">
+        <h3 class="profile-section-title">👤 Shop Owner Information (মালিকের ব্যক্তিগত তথ্য)</h3>
+        <p class="profile-section-desc">মালিকানা সংক্রান্ত তথ্য ও যোগাযোগের মাধ্যম</p>
+
+        <form onsubmit="event.preventDefault(); saveSellerProfile();">
+          <div class="form-row" style="margin-bottom:var(--sp-4)">
+            <div class="form-group">
+              <label class="form-label" for="seller-owner-name">Owner Full Name (মালিকের পূর্ণ নাম) *</label>
+              <input type="text" class="form-control" id="seller-owner-name" required placeholder="Karim Uddin">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="seller-owner-email">Business Email (ইমেইল) *</label>
+              <input type="email" class="form-control" id="seller-owner-email" required placeholder="karim@example.com">
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-bottom:var(--sp-4)">
+            <div class="form-group">
+              <label class="form-label" for="seller-owner-phone">Direct Mobile Number (মোবাইল নম্বর) *</label>
+              <input type="tel" class="form-control" id="seller-owner-phone" required placeholder="01711-234567">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="seller-nid">National ID / Trade License (NID / ট্রেড লাইসেন্স নং)</label>
+              <input type="text" class="form-control" id="seller-nid" placeholder="NID: 1985429182390">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-seller">Save Owner Info</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 3: Security & Password -->
+    <div id="tab-pane-security" class="profile-tab-pane hidden">
+      <div class="profile-section-card">
+        <h3 class="profile-section-title">🔒 Password & Account Security</h3>
+        <p class="profile-section-desc">সেলার অ্যাকাউন্টের নিরাপত্তা আপডেট করুন</p>
+
+        <form onsubmit="event.preventDefault(); handlePasswordChange();" style="max-width:550px">
+          <div class="form-group" style="margin-bottom:var(--sp-4)">
+            <label class="form-label" for="seller-curr-pass">Current Password</label>
+            <input type="password" class="form-control" id="seller-curr-pass" placeholder="••••••••">
+          </div>
+
+          <div class="form-group" style="margin-bottom:var(--sp-4)">
+            <label class="form-label" for="seller-new-pass">New Password</label>
+            <input type="password" class="form-control" id="seller-new-pass" placeholder="At least 8 characters">
+          </div>
+
+          <div class="form-group" style="margin-bottom:var(--sp-5)">
+            <label class="form-label" for="seller-confirm-pass">Confirm New Password</label>
+            <input type="password" class="form-control" id="seller-confirm-pass" placeholder="••••••••">
+          </div>
+
+          <button type="submit" class="btn btn-seller">Update Password</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script type="module">
+  import { requireRole, getUser, updateUserProfile } from '../js/auth.js';
+  import { showToast } from '../js/main.js';
+  import '../js/main.js';
+
+  requireRole('seller');
+
+  let currentAvatarData = null;
+  let currentShopLogoData = null;
+
+  function initSellerProfile() {
+    const user = getUser();
+    if (!user) return;
+
+    // Header Display
+    document.getElementById('profile-display-shop').textContent = user.shop_name || 'My Fresh Fish Store';
+    document.getElementById('profile-display-owner').textContent = `Owner: ${user.name || 'Seller'} · ${user.district || 'Bangladesh'}`;
+    document.getElementById('sidebar-name').textContent = user.name || 'Seller';
+    document.getElementById('sidebar-shop').textContent = user.shop_name || 'My Shop';
+
+    // Shop Form
+    document.getElementById('seller-shop-name').value = user.shop_name || '';
+    document.getElementById('seller-shop-tagline').value = user.shop_tagline || '';
+    if (user.district) document.getElementById('seller-district').value = user.district;
+    document.getElementById('seller-market-area').value = user.market_area || '';
+    document.getElementById('seller-bkash').value = user.bkash || '';
+    document.getElementById('seller-nagad').value = user.nagad || '';
+    document.getElementById('seller-address').value = user.address || '';
+    document.getElementById('seller-bio').value = user.bio || '';
+
+    // Owner Form
+    document.getElementById('seller-owner-name').value = user.name || '';
+    document.getElementById('seller-owner-email').value = user.email || '';
+    document.getElementById('seller-owner-phone').value = user.phone || '';
+    document.getElementById('seller-nid').value = user.nid || '';
+
+    // Render Avatar & Shop Logo
+    renderSellerAvatar(user.avatar, user.name);
+    renderShopLogo(user.shop_logo);
+  }
+
+  function renderSellerAvatar(avatarSrc, name) {
+    const initialEl = document.getElementById('avatar-initial');
+    const imgEl = document.getElementById('avatar-img');
+    const removeBtn = document.getElementById('remove-avatar-btn');
+    const sidebarAvatar = document.getElementById('sidebar-avatar');
+
+    if (avatarSrc) {
+      currentAvatarData = avatarSrc;
+      imgEl.src = avatarSrc;
+      imgEl.classList.remove('hidden');
+      initialEl.classList.add('hidden');
+      removeBtn.style.display = 'inline-block';
+      if (sidebarAvatar) {
+        sidebarAvatar.innerHTML = `<img src="${avatarSrc}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        sidebarAvatar.style.background = 'transparent';
+      }
+    } else {
+      currentAvatarData = null;
+      imgEl.src = '';
+      imgEl.classList.add('hidden');
+      initialEl.classList.remove('hidden');
+      initialEl.textContent = (name || 'S').charAt(0).toUpperCase();
+      removeBtn.style.display = 'none';
+      if (sidebarAvatar) {
+        sidebarAvatar.textContent = (name || 'S').charAt(0).toUpperCase();
+        sidebarAvatar.style.background = 'var(--seller)';
+      }
+    }
+  }
+
+  function renderShopLogo(logoSrc) {
+    const placeholder = document.getElementById('shop-logo-placeholder');
+    const img = document.getElementById('shop-logo-img');
+    const removeBtn = document.getElementById('remove-shop-logo-btn');
+
+    if (logoSrc) {
+      currentShopLogoData = logoSrc;
+      img.src = logoSrc;
+      img.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+      removeBtn.style.display = 'inline-block';
+    } else {
+      currentShopLogoData = null;
+      img.src = '';
+      img.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+      removeBtn.style.display = 'none';
+    }
+  }
+
+  // Avatar Upload Listener
+  document.getElementById('avatar-file-input').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select an image file', 'warning');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const base64 = evt.target.result;
+      renderSellerAvatar(base64, document.getElementById('seller-owner-name').value);
+      updateUserProfile({ avatar: base64 });
+      showToast('Owner photo updated successfully! 📷', 'success');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  window.removeSellerAvatar = function() {
+    renderSellerAvatar(null, document.getElementById('seller-owner-name').value);
+    updateUserProfile({ avatar: null });
+    showToast('Owner photo removed', 'info');
+  };
+
+  // Shop Logo Upload Listener
+  document.getElementById('shop-logo-file-input').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file', 'warning');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const base64 = evt.target.result;
+      renderShopLogo(base64);
+      updateUserProfile({ shop_logo: base64 });
+      showToast('Shop brand logo updated successfully! 🏪', 'success');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  window.removeShopLogo = function() {
+    renderShopLogo(null);
+    updateUserProfile({ shop_logo: null });
+    showToast('Shop logo removed', 'info');
+  };
+
+  window.switchSellerTab = function(tab, el) {
+    document.querySelectorAll('.profile-tab-pane').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('.profile-tab-item').forEach(t => t.classList.remove('active'));
+
+    document.getElementById(`tab-pane-${tab}`)?.classList.remove('hidden');
+    el?.classList.add('active');
+  };
+
+  window.saveSellerProfile = function() {
+    const shop_name = document.getElementById('seller-shop-name').value.trim();
+    const shop_tagline = document.getElementById('seller-shop-tagline').value.trim();
+    const district = document.getElementById('seller-district').value;
+    const market_area = document.getElementById('seller-market-area').value.trim();
+    const bkash = document.getElementById('seller-bkash').value.trim();
+    const nagad = document.getElementById('seller-nagad').value.trim();
+    const address = document.getElementById('seller-address').value.trim();
+    const bio = document.getElementById('seller-bio').value.trim();
+
+    const name = document.getElementById('seller-owner-name').value.trim();
+    const email = document.getElementById('seller-owner-email').value.trim();
+    const phone = document.getElementById('seller-owner-phone').value.trim();
+    const nid = document.getElementById('seller-nid').value.trim();
+
+    if (!shop_name || !name || !phone) {
+      showToast('Shop name, owner name, and phone number are required', 'warning');
+      return;
+    }
+
+    const updates = {
+      shop_name,
+      shop_tagline,
+      district,
+      market_area,
+      bkash,
+      nagad,
+      address,
+      bio,
+      name,
+      email,
+      phone,
+      nid,
+      avatar: currentAvatarData,
+      shop_logo: currentShopLogoData
+    };
+
+    updateUserProfile(updates);
+    document.getElementById('profile-display-shop').textContent = shop_name;
+    document.getElementById('profile-display-owner').textContent = `Owner: ${name} · ${district}`;
+    document.getElementById('sidebar-name').textContent = name;
+    document.getElementById('sidebar-shop').textContent = shop_name;
+
+    showToast('Shop and owner profile updated! 🎉', 'success', 'Saved');
+  };
+
+  window.handlePasswordChange = function() {
+    const curr = document.getElementById('seller-curr-pass').value;
+    const newP = document.getElementById('seller-new-pass').value;
+    const conf = document.getElementById('seller-confirm-pass').value;
+
+    if (!curr || !newP || !conf) {
+      showToast('Please fill all password fields', 'warning');
+      return;
+    }
+    if (newP.length < 8) {
+      showToast('New password must be at least 8 characters', 'warning');
+      return;
+    }
+    if (newP !== conf) {
+      showToast('New passwords do not match', 'error');
+      return;
+    }
+
+    document.getElementById('seller-curr-pass').value = '';
+    document.getElementById('seller-new-pass').value = '';
+    document.getElementById('seller-confirm-pass').value = '';
+
+    showToast('Password updated securely! 🔒', 'success', 'Security Updated');
+  };
+
+  initSellerProfile();
+</script>
+</body>
+</html>

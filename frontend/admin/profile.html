@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Profile — FishBazar</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo">
+      <div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div>
+      <div>FishBazar <span class="badge badge-danger" style="font-size:0.7rem;font-weight:700">ADMIN</span></div>
+    </a>
+    <div class="navbar-actions">
+      <a href="../index.html" class="navbar-btn desktop-only">🏠 View Site</a>
+      <div class="nav-dropdown">
+        <div class="navbar-avatar" id="nav-avatar" style="background:var(--danger);cursor:pointer">A</div>
+        <div class="nav-dropdown-menu">
+          <a href="profile.html" class="nav-dropdown-item">👤 Admin Profile</a>
+          <a href="dashboard.html" class="nav-dropdown-item">📊 Dashboard</a>
+          <a href="sellers.html" class="nav-dropdown-item">🏪 Sellers</a>
+          <div class="nav-dropdown-divider"></div>
+          <span class="nav-dropdown-item danger" data-action="logout">🚪 Logout</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout admin-dash">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><span class="sidebar-role-badge admin">🔧 Super Admin</span></div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar" style="background:var(--danger)">A</div>
+      <div><div class="sidebar-user-name" id="sidebar-name">Admin</div><div class="sidebar-user-email">Super Administrator</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-label">Overview</div>
+      <a href="profile.html"   class="sidebar-nav-link active"><span class="sidebar-nav-icon">👤</span> Admin Profile</a>
+      <a href="dashboard.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">📊</span> Dashboard</a>
+      <div class="sidebar-nav-label">Management</div>
+      <a href="sellers.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">🏪</span> Sellers</a>
+      <a href="customers.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">👥</span> Customers</a>
+      <a href="products.html"  class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> Products</a>
+      <a href="orders.html"    class="sidebar-nav-link"><span class="sidebar-nav-icon">📦</span> All Orders</a>
+      <div class="sidebar-nav-label">Site</div>
+      <a href="../index.html"  class="sidebar-nav-link"><span class="sidebar-nav-icon">🌐</span> View Storefront</a>
+    </nav>
+    <div class="sidebar-footer"><span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dashboard-content">
+    
+    <!-- Profile Header Card -->
+    <div class="profile-card">
+      <div class="profile-cover admin"></div>
+      <div class="profile-header-body">
+        <div class="profile-avatar-row">
+          <div class="avatar-uploader-wrap">
+            <div class="avatar-uploader admin" id="avatar-container" onclick="document.getElementById('avatar-file-input').click()" title="Click to upload admin avatar">
+              <div class="avatar-uploader-initial" id="avatar-initial">A</div>
+              <img src="" class="avatar-uploader-img hidden" id="avatar-img" alt="Admin Photo">
+              <div class="avatar-upload-overlay">
+                <span style="font-size:1.3rem">📷</span>
+                <span>Change</span>
+              </div>
+              <div class="avatar-edit-badge" title="Change Photo">✏️</div>
+            </div>
+            <input type="file" id="avatar-file-input" accept="image/*" class="hidden">
+
+            <div class="profile-meta">
+              <h1 class="profile-title-name">
+                <span id="profile-display-name">System Administrator</span>
+                <span class="badge badge-danger" style="font-size:0.75rem">Root Access</span>
+              </h1>
+              <div class="profile-title-sub" id="profile-display-email">admin@fishbazar.com</div>
+              <div style="margin-top:var(--sp-2);display:flex;gap:var(--sp-2)">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('avatar-file-input').click()">📷 Upload Avatar</button>
+                <button type="button" class="btn btn-ghost btn-sm text-danger" id="remove-avatar-btn" onclick="removeAdminAvatar()" style="display:none;color:var(--danger)">🗑️ Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <button type="button" class="btn btn-primary btn-md" onclick="saveAdminProfile()">💾 Save Changes</button>
+          </div>
+        </div>
+
+        <div class="profile-tabs-nav">
+          <div class="profile-tab-item active" onclick="switchAdminTab('details', this)">👤 Admin Information</div>
+          <div class="profile-tab-item" onclick="switchAdminTab('security', this)">🔒 Password & Security</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 1: Details -->
+    <div id="tab-pane-details" class="profile-tab-pane">
+      <div class="profile-section-card">
+        <h3 class="profile-section-title">👤 Administrator Profile</h3>
+        <p class="profile-section-desc">মেইন অ্যাডমিন অ্যাকাউন্টের বিবরণ আপডেট করুন</p>
+
+        <form onsubmit="event.preventDefault(); saveAdminProfile();">
+          <div class="form-row" style="margin-bottom:var(--sp-4)">
+            <div class="form-group">
+              <label class="form-label" for="admin-name">Admin Name *</label>
+              <input type="text" class="form-control" id="admin-name" required placeholder="Admin User">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-email">Admin Email *</label>
+              <input type="email" class="form-control" id="admin-email" required placeholder="admin@example.com">
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-bottom:var(--sp-5)">
+            <div class="form-group">
+              <label class="form-label" for="admin-phone">Contact Phone</label>
+              <input type="tel" class="form-control" id="admin-phone" placeholder="01711-333333">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-role-title">Designation / Role</label>
+              <input type="text" class="form-control" id="admin-role-title" value="Platform Master Administrator" readonly style="background:var(--bg-secondary)">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Save Info</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 2: Security -->
+    <div id="tab-pane-security" class="profile-tab-pane hidden">
+      <div class="profile-section-card">
+        <h3 class="profile-section-title">🔒 Security & Authentication</h3>
+        <p class="profile-section-desc">অ্যাডমিন প্যানেলের মাস্টার পাসওয়ার্ড আপডেট</p>
+
+        <form onsubmit="event.preventDefault(); handlePasswordChange();" style="max-width:550px">
+          <div class="form-group" style="margin-bottom:var(--sp-4)">
+            <label class="form-label" for="admin-curr-pass">Current Password</label>
+            <input type="password" class="form-control" id="admin-curr-pass" placeholder="••••••••">
+          </div>
+          <div class="form-group" style="margin-bottom:var(--sp-4)">
+            <label class="form-label" for="admin-new-pass">New Password</label>
+            <input type="password" class="form-control" id="admin-new-pass" placeholder="At least 8 characters">
+          </div>
+          <div class="form-group" style="margin-bottom:var(--sp-5)">
+            <label class="form-label" for="admin-confirm-pass">Confirm Password</label>
+            <input type="password" class="form-control" id="admin-confirm-pass" placeholder="••••••••">
+          </div>
+
+          <button type="submit" class="btn btn-primary">Update Admin Password</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script type="module">
+  import { requireRole, getUser, updateUserProfile } from '../js/auth.js';
+  import { showToast } from '../js/main.js';
+  import '../js/main.js';
+
+  requireRole('admin');
+
+  let currentAvatarData = null;
+
+  function initAdminProfile() {
+    const user = getUser();
+    if (!user) return;
+
+    document.getElementById('profile-display-name').textContent = user.name || 'Admin';
+    document.getElementById('profile-display-email').textContent = user.email || 'admin@fishbazar.com';
+    document.getElementById('sidebar-name').textContent = user.name || 'Admin';
+
+    document.getElementById('admin-name').value = user.name || '';
+    document.getElementById('admin-email').value = user.email || '';
+    document.getElementById('admin-phone').value = user.phone || '';
+
+    renderAdminAvatar(user.avatar, user.name);
+  }
+
+  function renderAdminAvatar(avatarSrc, name) {
+    const initialEl = document.getElementById('avatar-initial');
+    const imgEl = document.getElementById('avatar-img');
+    const removeBtn = document.getElementById('remove-avatar-btn');
+    const sidebarAvatar = document.getElementById('sidebar-avatar');
+
+    if (avatarSrc) {
+      currentAvatarData = avatarSrc;
+      imgEl.src = avatarSrc;
+      imgEl.classList.remove('hidden');
+      initialEl.classList.add('hidden');
+      removeBtn.style.display = 'inline-block';
+      if (sidebarAvatar) {
+        sidebarAvatar.innerHTML = `<img src="${avatarSrc}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        sidebarAvatar.style.background = 'transparent';
+      }
+    } else {
+      currentAvatarData = null;
+      imgEl.src = '';
+      imgEl.classList.add('hidden');
+      initialEl.classList.remove('hidden');
+      initialEl.textContent = (name || 'A').charAt(0).toUpperCase();
+      removeBtn.style.display = 'none';
+      if (sidebarAvatar) {
+        sidebarAvatar.textContent = (name || 'A').charAt(0).toUpperCase();
+        sidebarAvatar.style.background = 'var(--danger)';
+      }
+    }
+  }
+
+  document.getElementById('avatar-file-input').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select an image file', 'warning');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const base64 = evt.target.result;
+      renderAdminAvatar(base64, document.getElementById('admin-name').value);
+      updateUserProfile({ avatar: base64 });
+      showToast('Admin avatar updated! 📷', 'success');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  window.removeAdminAvatar = function() {
+    renderAdminAvatar(null, document.getElementById('admin-name').value);
+    updateUserProfile({ avatar: null });
+    showToast('Admin avatar removed', 'info');
+  };
+
+  window.switchAdminTab = function(tab, el) {
+    document.querySelectorAll('.profile-tab-pane').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('.profile-tab-item').forEach(t => t.classList.remove('active'));
+
+    document.getElementById(`tab-pane-${tab}`)?.classList.remove('hidden');
+    el?.classList.add('active');
+  };
+
+  window.saveAdminProfile = function() {
+    const name = document.getElementById('admin-name').value.trim();
+    const email = document.getElementById('admin-email').value.trim();
+    const phone = document.getElementById('admin-phone').value.trim();
+
+    if (!name || !email) {
+      showToast('Name and email are required', 'warning');
+      return;
+    }
+
+    const updates = { name, email, phone, avatar: currentAvatarData };
+    updateUserProfile(updates);
+
+    document.getElementById('profile-display-name').textContent = name;
+    document.getElementById('profile-display-email').textContent = email;
+    document.getElementById('sidebar-name').textContent = name;
+
+    showToast('Admin profile updated! ✅', 'success', 'Saved');
+  };
+
+  window.handlePasswordChange = function() {
+    const curr = document.getElementById('admin-curr-pass').value;
+    const newP = document.getElementById('admin-new-pass').value;
+    const conf = document.getElementById('admin-confirm-pass').value;
+
+    if (!curr || !newP || !conf) {
+      showToast('Please fill all password fields', 'warning');
+      return;
+    }
+    if (newP.length < 8) {
+      showToast('New password must be at least 8 characters', 'warning');
+      return;
+    }
+    if (newP !== conf) {
+      showToast('New passwords do not match', 'error');
+      return;
+    }
+
+    document.getElementById('admin-curr-pass').value = '';
+    document.getElementById('admin-new-pass').value = '';
+    document.getElementById('admin-confirm-pass').value = '';
+
+    showToast('Admin password updated! 🔒', 'success', 'Security Updated');
+  };
+
+  initAdminProfile();
+</script>
+</body>
+</html>

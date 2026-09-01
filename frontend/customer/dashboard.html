@@ -44,6 +44,7 @@
     <nav class="sidebar-nav">
       <div class="sidebar-nav-label">My Account</div>
       <a href="dashboard.html" class="sidebar-nav-link active"><span class="sidebar-nav-icon">🏠</span> Dashboard</a>
+      <a href="profile.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">👤</span> My Profile</a>
       <a href="orders.html"    class="sidebar-nav-link"><span class="sidebar-nav-icon">📦</span> My Orders</a>
       <div class="sidebar-nav-label">Shopping</div>
       <a href="../shop.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> Browse Fish</a>
@@ -104,9 +105,9 @@
     <div class="table-card" style="margin-bottom:var(--sp-8)">
       <div class="table-header">
         <span class="table-title">📦 Recent Orders</span>
-        <a href="orders.html" class="btn btn-outline btn-sm">View All</a>
+        <a href="orders.html" class="btn btn-outline btn-sm">View All Orders →</a>
       </div>
-      <div class="table-wrapper">
+      <div class="table-wrap">
         <table>
           <thead>
             <tr>
@@ -119,56 +120,27 @@
             </tr>
           </thead>
           <tbody id="recent-orders-tbody">
-            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading orders...</td></tr>
+            <tr><td colspan="6"><div class="skeleton" style="height:40px"></div></td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Addresses -->
-    <div style="margin-bottom:var(--sp-8)">
-      <div class="section-title-row">
-        <h3 class="section-heading title-with-bar" style="font-size:1.25rem">📍 Delivery Addresses</h3>
-        <button class="btn btn-outline btn-sm" onclick="openAddAddressModal()">+ Add New</button>
-      </div>
-      <div class="address-grid" id="address-grid">
-        <div class="address-card default">
-          <div class="address-card-label">🏠 Home (Default)</div>
-          <div class="address-card-text">45 Mirpur Road, Section 10<br>Dhaka 1216, Bangladesh</div>
-        </div>
-        <div class="address-add-card" onclick="openAddAddressModal()">
-          <span style="font-size:2rem">➕</span>
-          <span style="font-size:var(--fs-sm);font-weight:600">Add New Address</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Profile -->
+    <!-- Quick Profile Card -->
     <div class="table-card">
       <div class="table-header">
-        <span class="table-title">👤 My Profile</span>
-        <button class="btn btn-primary btn-sm" onclick="saveProfile()">Save Changes</button>
+        <span class="table-title">👤 Personal Profile</span>
+        <a href="profile.html" class="btn btn-primary btn-sm">Edit Full Profile ✏️</a>
       </div>
       <div style="padding:var(--sp-6)">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-5)">
           <div class="form-group">
             <label class="form-label">Full Name</label>
-            <input type="text" class="form-control" id="profile-name" placeholder="Your name">
+            <input type="text" class="form-control" id="profile-name" placeholder="Your name" readonly style="background:var(--bg-secondary)">
           </div>
           <div class="form-group">
             <label class="form-label">Phone Number</label>
-            <input type="tel" class="form-control" id="profile-phone" placeholder="+880 XXXXXXXXXX" readonly>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email Address</label>
-            <input type="email" class="form-control" id="profile-email" placeholder="your@email.com">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Default District</label>
-            <select class="form-control" id="profile-district">
-              <option>Dhaka</option><option>Chittagong</option><option>Rajshahi</option>
-              <option>Sylhet</option><option>Khulna</option><option>Barishal</option>
-            </select>
+            <input type="tel" class="form-control" id="profile-phone" placeholder="+880 XXXXXXXXXX" readonly style="background:var(--bg-secondary)">
           </div>
         </div>
       </div>
@@ -179,18 +151,27 @@
 
 <!-- Add Address Modal -->
 <div class="modal-overlay" id="add-address-modal">
-  <div class="modal modal-sm">
+  <div class="modal-box">
     <div class="modal-header">
-      <span class="modal-title">Add New Address</span>
-      <span class="modal-close" data-modal-close>✕</span>
+      <h3 class="modal-title">Add New Address</h3>
+      <button class="modal-close" onclick="closeModal('add-address-modal')">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="form-group"><label class="form-label">Label (Home/Work/etc.)</label><input class="form-control" id="addr-label" placeholder="e.g. Home, Office"></div>
-      <div class="form-group"><label class="form-label">Address</label><textarea class="form-control" id="addr-text" rows="3" placeholder="Street, Area, City..."></textarea></div>
-      <div class="form-group"><label class="form-label">District</label><select class="form-control" id="addr-district"><option>Dhaka</option><option>Chittagong</option></select></div>
+    <div class="form-group">
+      <label class="form-label">Address Label</label>
+      <input type="text" class="form-control" placeholder="e.g. Home, Office">
+    </div>
+    <div class="form-group">
+      <label class="form-label">District</label>
+      <select class="form-control">
+        <option>Dhaka</option><option>Chittagong</option><option>Rajshahi</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Street Address</label>
+      <textarea class="form-control" rows="3" placeholder="House no, road no, area..."></textarea>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" data-modal-close>Cancel</button>
+      <button class="btn btn-ghost" onclick="closeModal('add-address-modal')">Cancel</button>
       <button class="btn btn-primary" onclick="saveAddress()">Save Address</button>
     </div>
   </div>
@@ -199,7 +180,7 @@
 <script type="module">
   import { fetchMyOrders } from '../js/api.js';
   import { requireRole, getUser } from '../js/auth.js';
-  import { showToast, formatBDT, formatDate, openModal, closeModal } from '../js/main.js';
+  import { showToast, formatDate, formatBDT, openModal, closeModal } from '../js/main.js';
   import '../js/main.js';
 
   requireRole('customer');
@@ -208,9 +189,24 @@
   if (user) {
     document.getElementById('welcome-name').textContent = user.name?.split(' ')[0] || 'there';
     document.getElementById('sidebar-name').textContent = user.name || 'Customer';
-    document.getElementById('sidebar-phone').textContent = user.phone || '';
-    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'C';
-    document.getElementById('nav-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'C';
+    document.getElementById('sidebar-phone').textContent = user.phone || user.email || '';
+    
+    const sidebarAvatar = document.getElementById('sidebar-avatar');
+    const navAvatar = document.getElementById('nav-avatar');
+    if (user.avatar) {
+      if (sidebarAvatar) {
+        sidebarAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        sidebarAvatar.style.background = 'transparent';
+      }
+      if (navAvatar) {
+        navAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        navAvatar.style.background = 'transparent';
+      }
+    } else {
+      if (sidebarAvatar) sidebarAvatar.textContent = user.name?.charAt(0).toUpperCase() || 'C';
+      if (navAvatar) navAvatar.textContent = user.name?.charAt(0).toUpperCase() || 'C';
+    }
+
     document.getElementById('profile-name').value = user.name || '';
     document.getElementById('profile-phone').value = user.phone || '';
   }

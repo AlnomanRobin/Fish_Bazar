@@ -37,15 +37,16 @@
       </div>
     </div>
     <nav class="sidebar-nav">
-      <div class="sidebar-nav-label">Dashboard</div>
-      <a href="dashboard.html" class="sidebar-nav-link active"><span class="sidebar-nav-icon">📊</span> Overview</a>
+      <div class="sidebar-nav-label">Shop Management</div>
+      <a href="dashboard.html"   class="sidebar-nav-link active"><span class="sidebar-nav-icon">📊</span> Overview</a>
+      <a href="profile.html"     class="sidebar-nav-link"><span class="sidebar-nav-icon">🏪</span> Shop Profile & Logo</a>
       <div class="sidebar-nav-label">Products</div>
       <a href="products.html"    class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> My Products</a>
       <a href="add-product.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">➕</span> Add Product</a>
       <div class="sidebar-nav-label">Orders</div>
-      <a href="orders.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">📦</span> Orders <span class="sidebar-nav-badge" id="pending-badge">5</span></a>
+      <a href="orders.html"      class="sidebar-nav-link"><span class="sidebar-nav-icon">📦</span> Orders <span class="sidebar-nav-badge" id="pending-badge">5</span></a>
       <div class="sidebar-nav-label">Store</div>
-      <a href="../shop.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">🏪</span> View Storefront</a>
+      <a href="../shop.html"     class="sidebar-nav-link"><span class="sidebar-nav-icon">🌐</span> View Storefront</a>
     </nav>
     <div class="sidebar-footer">
       <span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span>
@@ -59,7 +60,10 @@
         <h1 style="font-size:var(--fs-3xl);font-weight:800">Seller Dashboard</h1>
         <p style="color:var(--text-muted);font-family:var(--font-bn)" id="shop-name-header">আমার দোকান</p>
       </div>
-      <a href="add-product.html" class="btn btn-seller btn-lg">+ Add New Fish</a>
+      <div class="flex gap-3">
+        <a href="profile.html" class="btn btn-outline btn-sm">🏪 Edit Shop Profile</a>
+        <a href="add-product.html" class="btn btn-primary btn-sm">+ Add Fish</a>
+      </div>
     </div>
 
     <!-- KPI Grid -->
@@ -165,10 +169,29 @@
 
   const user = getUser();
   if (user) {
-    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'S';
-    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'S';
-    document.getElementById('sidebar-name').textContent   = user.name || 'Seller';
-    document.getElementById('sidebar-shop').textContent   = user.shop_name || 'My Shop';
+    const sidebarAvatar = document.getElementById('sidebar-avatar');
+    const navAvatar = document.getElementById('nav-avatar');
+    if (user.avatar) {
+      if (sidebarAvatar) {
+        sidebarAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        sidebarAvatar.style.background = 'transparent';
+      }
+      if (navAvatar) {
+        navAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        navAvatar.style.background = 'transparent';
+      }
+    } else {
+      if (sidebarAvatar) {
+        sidebarAvatar.textContent = user.name?.charAt(0).toUpperCase() || 'S';
+        sidebarAvatar.style.background = 'var(--seller)';
+      }
+      if (navAvatar) {
+        navAvatar.textContent = user.name?.charAt(0).toUpperCase() || 'S';
+        navAvatar.style.background = 'var(--seller)';
+      }
+    }
+    document.getElementById('sidebar-name').textContent     = user.name || 'Seller';
+    document.getElementById('sidebar-shop').textContent     = user.shop_name || 'My Shop';
     document.getElementById('shop-name-header').textContent = user.shop_name || 'আমার দোকান';
   }
 

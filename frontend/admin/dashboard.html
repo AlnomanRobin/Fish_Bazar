@@ -35,6 +35,7 @@
     <nav class="sidebar-nav">
       <div class="sidebar-nav-label">Overview</div>
       <a href="dashboard.html" class="sidebar-nav-link active"><span class="sidebar-nav-icon">📊</span> Dashboard</a>
+      <a href="profile.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">👤</span> Admin Profile</a>
       <div class="sidebar-nav-label">Management</div>
       <a href="sellers.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">🏪</span> Sellers <span class="sidebar-nav-badge danger" id="pending-count">2</span></a>
       <a href="customers.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">👥</span> Customers</a>
@@ -176,9 +177,28 @@
 
   const user = getUser();
   if (user) {
-    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'A';
-    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'A';
-    document.getElementById('sidebar-name').textContent   = user.name || 'Admin';
+    const sidebarAvatar = document.getElementById('sidebar-avatar');
+    const navAvatar = document.getElementById('nav-avatar');
+    if (user.avatar) {
+      if (sidebarAvatar) {
+        sidebarAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        sidebarAvatar.style.background = 'transparent';
+      }
+      if (navAvatar) {
+        navAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        navAvatar.style.background = 'transparent';
+      }
+    } else {
+      if (sidebarAvatar) {
+        sidebarAvatar.textContent = user.name?.charAt(0).toUpperCase() || 'A';
+        sidebarAvatar.style.background = 'var(--danger)';
+      }
+      if (navAvatar) {
+        navAvatar.textContent = user.name?.charAt(0).toUpperCase() || 'A';
+        navAvatar.style.background = 'var(--danger)';
+      }
+    }
+    document.getElementById('sidebar-name').textContent = user.name || 'Admin';
   }
 
   // Date
