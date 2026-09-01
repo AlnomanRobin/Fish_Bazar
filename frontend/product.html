@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Detail — FishBazar Bangladesh</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/product.css">
+</head>
+<body>
+
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="index.html" class="navbar-logo">
+      <div class="logo-icon"><img src="logo/Logo.png" alt="FishBazar logo"></div>
+      <div>FishBazar <span class="logo-bn">মাছের বাজার</span></div>
+    </a>
+    <div class="navbar-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="global-search" placeholder="Search fish...">
+    </div>
+    <div class="navbar-actions">
+      <div id="nav-guest" class="flex gap-3 items-center">
+        <a href="login.html" class="navbar-btn">Login</a>
+        <a href="login.html?tab=register" class="btn btn-accent btn-sm">Sign Up</a>
+      </div>
+      <div id="nav-user" class="flex gap-3 items-center hidden">
+        <div class="nav-dropdown">
+          <div class="navbar-avatar" id="nav-avatar" style="cursor:pointer">U</div>
+          <div class="nav-dropdown-menu">
+            <a href="#" class="nav-dropdown-item" id="nav-dashboard">📊 Dashboard</a>
+            <span class="nav-dropdown-item danger" data-action="logout">🚪 Logout</span>
+          </div>
+        </div>
+      </div>
+      <a href="cart.html" class="navbar-btn cart-btn">🛒 <span class="cart-badge hidden">0</span></a>
+      <div class="navbar-hamburger" id="navbar-hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</nav>
+
+<div class="product-page" id="product-page">
+  <div class="container">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb" id="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="shop.html">Shop</a>
+      <span class="breadcrumb-sep">›</span>
+      <span id="breadcrumb-product">Loading...</span>
+    </div>
+
+    <!-- Loading State -->
+    <div id="product-loading">
+      <div class="product-layout">
+        <div class="skeleton" style="height:440px;border-radius:1.75rem"></div>
+        <div style="display:flex;flex-direction:column;gap:1rem;padding-left:2rem">
+          <div class="skeleton" style="height:24px;width:30%"></div>
+          <div class="skeleton" style="height:48px"></div>
+          <div class="skeleton" style="height:24px;width:60%"></div>
+          <div class="skeleton" style="height:100px;border-radius:1rem"></div>
+          <div class="skeleton" style="height:48px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Content (hidden until loaded) -->
+    <div id="product-content" class="hidden">
+      <div class="product-layout">
+        <!-- Gallery -->
+        <div class="product-gallery">
+          <div class="gallery-main">
+            <img src="" alt="" id="gallery-main-img" loading="eager">
+          </div>
+          <div class="gallery-thumbs" id="gallery-thumbs"></div>
+        </div>
+
+        <!-- Info -->
+        <div class="product-info">
+          <a href="shop.html" class="product-category-link" id="product-category">← Back to Shop</a>
+          <h1 class="product-title" id="product-name">Loading...</h1>
+          <div class="product-title-bn" id="product-name-bn"></div>
+
+          <div class="product-rating-row">
+            <div class="star-rating" id="product-rating"></div>
+            <span class="product-review-count" id="product-reviews"></span>
+            <span class="badge badge-success" id="freshness-badge"></span>
+          </div>
+
+          <!-- Price -->
+          <div class="product-price-block">
+            <div class="product-price">
+              <span class="cur">৳</span><span id="product-price">0</span>
+            </div>
+            <div class="product-per-kg">প্রতি কিলোগ্রাম (per kilogram)</div>
+            <div class="product-stock">
+              <span class="stock-dot in-stock" id="stock-dot"></span>
+              <span id="stock-text">In Stock</span>
+            </div>
+          </div>
+
+          <!-- Fish Info -->
+          <div class="fish-info-grid">
+            <div class="fish-info-item">
+              <div class="fish-info-icon">📍</div>
+              <div class="fish-info-label">Region</div>
+              <div class="fish-info-value" id="fish-region">—</div>
+            </div>
+            <div class="fish-info-item">
+              <div class="fish-info-icon">⏱️</div>
+              <div class="fish-info-label">Freshness</div>
+              <div class="fish-info-value" id="fish-freshness">—</div>
+            </div>
+            <div class="fish-info-item">
+              <div class="fish-info-icon">⚖️</div>
+              <div class="fish-info-label">In Stock</div>
+              <div class="fish-info-value" id="fish-stock">—</div>
+            </div>
+          </div>
+
+          <!-- Cleaning Options -->
+          <div class="product-options">
+            <div class="product-option-label">Cleaning Option:</div>
+            <div class="cleaning-options" id="cleaning-options"></div>
+          </div>
+
+          <!-- Quantity + Cart -->
+          <div class="product-cart-row">
+            <div class="qty-group">
+              <div class="qty-group-label">Quantity (kg)</div>
+              <div class="qty-stepper">
+                <button class="qty-btn" onclick="changeQty(-0.5)">−</button>
+                <input type="number" class="qty-value" id="qty-input" value="1" min="0.5" step="0.5">
+                <button class="qty-btn" onclick="changeQty(0.5)">+</button>
+              </div>
+            </div>
+            <div style="flex:1">
+              <div class="qty-group-label">Total Price</div>
+              <div style="font-size:1.75rem;font-weight:900;color:var(--primary)">৳<span id="total-price">0</span></div>
+            </div>
+          </div>
+          <div class="flex gap-3" style="margin-bottom:var(--sp-5)">
+            <button class="btn btn-primary btn-lg flex-1" id="add-to-cart-btn">🛒 Add to Cart</button>
+            <button class="btn btn-accent btn-lg flex-1" id="buy-now-btn">⚡ Buy Now</button>
+          </div>
+
+          <!-- Seller Card -->
+          <div class="seller-card" id="seller-card">
+            <div class="seller-card-avatar" id="seller-avatar">S</div>
+            <div>
+              <div class="seller-card-name" id="seller-name">Seller Name</div>
+              <div class="seller-card-meta">
+                <span id="seller-rating">⭐ 4.8</span>
+                <span id="seller-district">📍 District</span>
+              </div>
+            </div>
+            <a href="#" class="seller-card-link" id="seller-link">View Shop →</a>
+          </div>
+
+          <!-- Description -->
+          <div style="margin-top:var(--sp-4)">
+            <div class="product-option-label" style="margin-bottom:var(--sp-3)">Description</div>
+            <p style="color:var(--text-secondary);font-size:var(--fs-sm);line-height:1.75" id="product-description"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Products -->
+      <div class="related-section">
+        <div class="section-title-row">
+          <h3 class="section-heading title-with-bar" style="font-size:1.5rem">Related Fish</h3>
+          <a href="shop.html" class="view-all">View All →</a>
+        </div>
+        <div class="products-grid" id="related-products"></div>
+      </div>
+    </div>
+
+    <!-- Not Found -->
+    <div id="product-not-found" class="hidden">
+      <div class="empty-state">
+        <div class="empty-state-icon">🐟</div>
+        <h3>Fish Not Found</h3>
+        <p>This product doesn't exist or has been removed.</p>
+        <a href="shop.html" class="btn btn-primary">Browse All Fish</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { fetchProduct } from './js/api.js';
+  import { addToCart } from './js/cart.js';
+  import { renderProductCard, showToast, renderStars, onVisible } from './js/main.js';
+  import './js/main.js';
+
+  const params  = new URLSearchParams(window.location.search);
+  const slug    = params.get('slug') || params.get('id') || '1';
+  let product   = null;
+  let selectedCleaning = 'whole';
+
+  function changeQty(delta) {
+    const input = document.getElementById('qty-input');
+    let val = parseFloat(input.value) + delta;
+    if (val < 0.5) val = 0.5;
+    if (val > 50)  val = 50;
+    input.value = val.toFixed(1);
+    updateTotalPrice();
+  }
+  window.changeQty = changeQty;
+
+  function updateTotalPrice() {
+    if (!product) return;
+    const qty   = parseFloat(document.getElementById('qty-input').value) || 1;
+    const total = Math.round(product.price_per_kg * qty);
+    document.getElementById('total-price').textContent = total.toLocaleString();
+  }
+
+  document.getElementById('qty-input').addEventListener('input', updateTotalPrice);
+
+  async function loadProduct() {
+    const res = await fetchProduct(slug);
+
+    document.getElementById('product-loading').classList.add('hidden');
+
+    if (!res.ok || !res.data) {
+      document.getElementById('product-not-found').classList.remove('hidden');
+      return;
+    }
+
+    product = res.data;
+    document.title = `${product.name_en} — FishBazar Bangladesh`;
+    document.getElementById('product-content').classList.remove('hidden');
+
+    // Breadcrumb
+    document.getElementById('breadcrumb-product').textContent = product.name_en;
+
+    // Gallery
+    const imgs = [product.img, product.img + '?v2', product.img + '?v3'].slice(0, 3);
+    document.getElementById('gallery-main-img').src = product.img;
+    document.getElementById('gallery-main-img').alt = product.name_en;
+    document.getElementById('gallery-thumbs').innerHTML = imgs.map((img, i) => `
+      <div class="gallery-thumb ${i===0?'active':''}" onclick="switchImg('${img}', this)">
+        <img src="${img}" alt="View ${i+1}" onerror="this.parentElement.style.display='none'">
+      </div>
+    `).join('');
+
+    // Names
+    document.getElementById('product-name').textContent    = product.name_en;
+    document.getElementById('product-name-bn').textContent = product.name_bn;
+    document.getElementById('product-category').textContent = `← ${product.category?.name_en || 'Shop'}`;
+    document.getElementById('product-category').href = `shop.html?category=${product.category_id}`;
+
+    // Rating
+    document.getElementById('product-rating').innerHTML = renderStars(product.rating).split('').map(s => `<span class="star">${s}</span>`).join('');
+    document.getElementById('product-reviews').textContent = `(${product.reviews} reviews)`;
+    document.getElementById('freshness-badge').textContent = product.freshness_hours < 100 ? `✓ Fresh ${product.freshness_hours}h` : 'Dried';
+
+    // Price
+    document.getElementById('product-price').textContent = product.price_per_kg.toLocaleString();
+    document.getElementById('fish-region').textContent   = product.region;
+    document.getElementById('fish-freshness').textContent= product.freshness_hours < 100 ? `${product.freshness_hours}h` : 'Dried';
+    document.getElementById('fish-stock').textContent    = `${product.stock_kg} kg`;
+    updateTotalPrice();
+
+    // Stock
+    const dot  = document.getElementById('stock-dot');
+    const text = document.getElementById('stock-text');
+    if (product.stock_kg > 10) { dot.className='stock-dot in-stock'; text.textContent='In Stock'; }
+    else if (product.stock_kg > 0) { dot.className='stock-dot low'; text.textContent=`Only ${product.stock_kg}kg left`; }
+    else { dot.className='stock-dot out'; text.textContent='Out of Stock'; }
+
+    // Cleaning options
+    const cleaningContainer = document.getElementById('cleaning-options');
+    cleaningContainer.innerHTML = (product.cleaning_options||['whole']).map(opt => `
+      <button class="cleaning-opt ${opt==='whole'?'active':''}" onclick="selectCleaning('${opt}', this)">
+        ${opt === 'whole' ? '🐟 Whole' : opt === 'cleaned' ? '✂️ Cleaned' : '🍽️ Fillet'}
+      </button>
+    `).join('');
+
+    // Seller
+    const seller = product.seller;
+    if (seller) {
+      document.getElementById('seller-avatar').textContent = seller.shop_name?.charAt(0) || 'S';
+      document.getElementById('seller-name').textContent   = seller.shop_name;
+      document.getElementById('seller-rating').textContent = `⭐ ${seller.rating}`;
+      document.getElementById('seller-district').textContent = `📍 ${seller.district}`;
+      document.getElementById('seller-link').href = `shop.html?seller_id=${seller.id}`;
+    }
+
+    // Description
+    document.getElementById('product-description').textContent = product.description || '';
+
+    // Add to cart
+    document.getElementById('add-to-cart-btn').addEventListener('click', () => {
+      const qty = parseFloat(document.getElementById('qty-input').value) || 1;
+      addToCart(product, qty, selectedCleaning);
+      showToast(`${product.name_en} added to cart!`, 'success', '🛒 Cart Updated');
+    });
+
+    // Buy now
+    document.getElementById('buy-now-btn').addEventListener('click', () => {
+      const qty = parseFloat(document.getElementById('qty-input').value) || 1;
+      addToCart(product, qty, selectedCleaning);
+      window.location.href = 'cart.html';
+    });
+
+    // Related products
+    if (product.related?.length) {
+      const relContainer = document.getElementById('related-products');
+      relContainer.innerHTML = product.related.map(p => renderProductCard(p)).join('');
+      relContainer.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', e => {
+          if (!e.target.closest('button')) window.location.href = `product.html?slug=${product.related.find(p=>p.id===+card.dataset.id)?.slug}`;
+        });
+      });
+    }
+  }
+
+  window.switchImg = function(src, el) {
+    document.getElementById('gallery-main-img').src = src;
+    document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  };
+
+  window.selectCleaning = function(opt, el) {
+    selectedCleaning = opt;
+    document.querySelectorAll('.cleaning-opt').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  };
+
+  loadProduct();
+</script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — FishBazar Seller</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+</head>
+<body>
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo"><div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span class="logo-bn">মাছের বাজার</span></div></a>
+    <div class="navbar-actions">
+      <div class="navbar-avatar" id="nav-avatar" style="background:var(--seller);cursor:pointer">S</div>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout seller-dash">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><span class="sidebar-role-badge seller">🏪 Seller</span></div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar" style="background:var(--seller)">S</div>
+      <div><div class="sidebar-user-name" id="sidebar-name">Seller</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">📊</span> Overview</a>
+      <a href="products.html"    class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> My Products</a>
+      <a href="add-product.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">➕</span> Add Product</a>
+      <a href="orders.html"      class="sidebar-nav-link active"><span class="sidebar-nav-icon">📦</span> Orders</a>
+    </nav>
+    <div class="sidebar-footer"><span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span></div>
+  </aside>
+
+  <main class="dashboard-content">
+    <div class="flex-between" style="margin-bottom:var(--sp-6)">
+      <div>
+        <h1 style="font-size:var(--fs-3xl);font-weight:800">📦 Orders</h1>
+        <p style="color:var(--text-muted)">Orders containing your products</p>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-chips" style="margin-bottom:var(--sp-5)">
+      <span class="filter-chip active" onclick="filterOrders('all', this)">All</span>
+      <span class="filter-chip" onclick="filterOrders('pending', this)">⏳ Pending</span>
+      <span class="filter-chip" onclick="filterOrders('confirmed', this)">✅ Confirmed</span>
+      <span class="filter-chip" onclick="filterOrders('shipped', this)">🚚 Shipped</span>
+      <span class="filter-chip" onclick="filterOrders('delivered', this)">📬 Delivered</span>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">Orders (<span id="order-count">0</span>)</span>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Amount</th>
+              <th>District</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal-overlay" id="status-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <span class="modal-title">Update Order Status</span>
+      <span class="modal-close" data-modal-close>✕</span>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom:var(--sp-4)">Order: <strong id="modal-order-id"></strong></p>
+      <div class="form-group">
+        <label class="form-label">New Status</label>
+        <select class="form-control" id="new-status">
+          <option value="confirmed">✅ Confirmed</option>
+          <option value="shipped">🚚 Shipped</option>
+          <option value="delivered">📬 Delivered</option>
+          <option value="cancelled">❌ Cancelled</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-modal-close>Cancel</button>
+      <button class="btn btn-seller" onclick="confirmStatusUpdate()">Update Status</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { fetchSellerOrders, updateOrderStatus } from '../js/api.js';
+  import { requireRole, getUser } from '../js/auth.js';
+  import { showToast, formatDate, openModal, closeModal } from '../js/main.js';
+  import '../js/main.js';
+
+  requireRole('seller');
+
+  const user = getUser();
+  if (user) {
+    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'S';
+    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'S';
+    document.getElementById('sidebar-name').textContent   = user.name || 'Seller';
+  }
+
+  const STATUS_CLASS = { pending:'status-pending', confirmed:'status-confirmed', shipped:'status-shipped', delivered:'status-delivered', cancelled:'status-cancelled' };
+  let allOrders    = [];
+  let updateTarget = null;
+
+  async function loadOrders() {
+    const res = await fetchSellerOrders(user?.seller_id);
+    if (!res.ok || !res.data) return;
+    allOrders = res.data;
+    renderOrders(allOrders);
+  }
+
+  function renderOrders(orders) {
+    document.getElementById('order-count').textContent = orders.length;
+    const tbody = document.getElementById('orders-tbody');
+    if (!orders.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted)">No orders found</td></tr>';
+      return;
+    }
+    tbody.innerHTML = orders.map(o => {
+      const item = o.items?.[0] || {};
+      const prod = item.product || {};
+      return `
+        <tr>
+          <td><strong>${o.id}</strong></td>
+          <td>
+            <div class="td-name">${o.customer?.name || 'Customer'}</div>
+            <div class="td-sub">${o.customer?.phone || ''}</div>
+          </td>
+          <td>${prod.name_en || '—'}</td>
+          <td>${item.qty_kg || 0} kg</td>
+          <td><strong>৳${o.total.toLocaleString()}</strong></td>
+          <td>${o.district}</td>
+          <td>${formatDate(o.date)}</td>
+          <td><span class="order-status ${STATUS_CLASS[o.status]}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></td>
+          <td>
+            ${['pending','confirmed','shipped'].includes(o.status) ? `
+              <button class="btn btn-outline btn-sm" onclick="openStatusModal('${o.id}', '${o.status}')">Update ▾</button>
+            ` : '<span style="color:var(--text-muted);font-size:var(--fs-xs)">Final</span>'}
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  window.filterOrders = function(status, el) {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    const filtered = status === 'all' ? allOrders : allOrders.filter(o => o.status === status);
+    renderOrders(filtered);
+  };
+
+  window.openStatusModal = function(orderId, currentStatus) {
+    updateTarget = orderId;
+    document.getElementById('modal-order-id').textContent = orderId;
+    const sel = document.getElementById('new-status');
+    sel.value = currentStatus;
+    openModal('status-modal');
+  };
+
+  window.confirmStatusUpdate = async function() {
+    if (!updateTarget) return;
+    const status = document.getElementById('new-status').value;
+    const res    = await updateOrderStatus(updateTarget, status);
+    if (res.ok) {
+      showToast(`Order updated to "${status}"`, 'success');
+      closeModal('status-modal');
+      const order = allOrders.find(o => o.id === updateTarget);
+      if (order) order.status = status;
+      renderOrders(allOrders);
+    } else {
+      showToast('Failed to update status', 'error');
+    }
+    updateTarget = null;
+  };
+
+  loadOrders();
+</script>
+</body>
+</html>

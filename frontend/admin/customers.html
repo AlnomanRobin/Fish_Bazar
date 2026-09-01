@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customers — FishBazar Admin</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+</head>
+<body>
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo"><div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span style="font-size:0.7rem;font-weight:700;color:var(--danger);text-transform:uppercase">Admin</span></div></a>
+    <div class="navbar-actions"><div class="navbar-avatar" id="nav-avatar" style="background:var(--danger)">A</div></div>
+  </div>
+</nav>
+
+<div class="dashboard-layout admin-dash">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><span class="sidebar-role-badge admin">🔧 Admin</span></div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar" style="background:var(--danger)">A</div>
+      <div><div class="sidebar-user-name" id="sidebar-name">Admin</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">📊</span> Dashboard</a>
+      <a href="sellers.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">🏪</span> Sellers</a>
+      <a href="customers.html" class="sidebar-nav-link active"><span class="sidebar-nav-icon">👥</span> Customers</a>
+      <a href="products.html"  class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> Products</a>
+      <a href="orders.html"    class="sidebar-nav-link"><span class="sidebar-nav-icon">📦</span> All Orders</a>
+    </nav>
+    <div class="sidebar-footer"><span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span></div>
+  </aside>
+
+  <main class="dashboard-content">
+    <div class="flex-between" style="margin-bottom:var(--sp-6)">
+      <div>
+        <h1 style="font-size:var(--fs-3xl);font-weight:800">👥 Customers</h1>
+        <p style="color:var(--text-muted)">View and manage all registered customers</p>
+      </div>
+    </div>
+
+    <div class="search-box" style="max-width:360px;margin-bottom:var(--sp-5)">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="customer-search" placeholder="Search name, phone, district..." oninput="searchCustomers()">
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">Customers (<span id="customer-count">0</span>)</span>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Customer</th><th>Phone</th><th>District</th><th>Orders</th><th>Total Spent</th><th>Joined</th><th>Status</th><th>Action</th></tr>
+          </thead>
+          <tbody id="customers-tbody">
+            <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import { fetchAdminCustomers } from '../js/api.js';
+  import { requireRole, getUser } from '../js/auth.js';
+  import { showToast, formatDate } from '../js/main.js';
+  import '../js/main.js';
+
+  requireRole('admin');
+  const user = getUser();
+  if (user) {
+    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'A';
+    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'A';
+    document.getElementById('sidebar-name').textContent   = user.name || 'Admin';
+  }
+
+  let allCustomers = [];
+
+  async function loadCustomers() {
+    const res = await fetchAdminCustomers();
+    if (!res.ok || !res.data) return;
+    allCustomers = res.data;
+    renderCustomers(allCustomers);
+  }
+
+  function renderCustomers(customers) {
+    document.getElementById('customer-count').textContent = customers.length;
+    const tbody = document.getElementById('customers-tbody');
+    if (!customers.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted)">No customers found</td></tr>'; return; }
+    tbody.innerHTML = customers.map(c => `
+      <tr>
+        <td>
+          <div class="td-avatar">
+            <div style="width:38px;height:38px;border-radius:50%;background:hsl(191,70%,88%);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--secondary);flex-shrink:0">${c.name.charAt(0)}</div>
+            <div>
+              <div class="td-name">${c.name}</div>
+              <div class="td-sub">${c.email}</div>
+            </div>
+          </div>
+        </td>
+        <td>${c.phone}</td>
+        <td>${c.district}</td>
+        <td><strong>${c.orders}</strong></td>
+        <td><strong>৳${c.spent.toLocaleString()}</strong></td>
+        <td>${formatDate(c.joined)}</td>
+        <td>${c.is_active ? '<span class="seller-status-active">● Active</span>' : '<span class="seller-status-suspended">● Inactive</span>'}</td>
+        <td>
+          <button class="btn btn-ghost btn-sm" onclick="showToast('Customer profile (demo)', \'info\')">👁 View</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  window.searchCustomers = function() {
+    const q = document.getElementById('customer-search').value.toLowerCase();
+    renderCustomers(allCustomers.filter(c =>
+      c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.district.toLowerCase().includes(q)
+    ));
+  };
+
+  loadCustomers();
+</script>
+</body>
+</html>

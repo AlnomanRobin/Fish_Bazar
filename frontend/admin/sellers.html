@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Sellers — FishBazar Admin</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+</head>
+<body>
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo"><div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span style="font-size:0.7rem;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:0.08em">Admin</span></div></a>
+    <div class="navbar-actions">
+      <div class="navbar-avatar" id="nav-avatar" style="background:var(--danger);cursor:pointer">A</div>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout admin-dash">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><span class="sidebar-role-badge admin">🔧 Admin</span></div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar" style="background:var(--danger)">A</div>
+      <div><div class="sidebar-user-name" id="sidebar-name">Admin</div><div class="sidebar-user-email">Super Administrator</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">📊</span> Dashboard</a>
+      <a href="sellers.html"   class="sidebar-nav-link active"><span class="sidebar-nav-icon">🏪</span> Sellers</a>
+      <a href="customers.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">👥</span> Customers</a>
+      <a href="products.html"  class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> Products</a>
+      <a href="orders.html"    class="sidebar-nav-link"><span class="sidebar-nav-icon">📦</span> All Orders</a>
+    </nav>
+    <div class="sidebar-footer"><span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span></div>
+  </aside>
+
+  <main class="dashboard-content">
+    <div class="flex-between" style="margin-bottom:var(--sp-6)">
+      <div>
+        <h1 style="font-size:var(--fs-3xl);font-weight:800">🏪 Manage Sellers</h1>
+        <p style="color:var(--text-muted)">Approve, suspend, and manage all sellers</p>
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-chips" style="margin-bottom:var(--sp-5)">
+      <span class="filter-chip active" onclick="filterSellers('all', this)">All Sellers</span>
+      <span class="filter-chip" onclick="filterSellers('pending', this)">⏳ Pending Approval</span>
+      <span class="filter-chip" onclick="filterSellers('approved', this)">✅ Approved</span>
+      <span class="filter-chip" onclick="filterSellers('suspended', this)">🚫 Suspended</span>
+    </div>
+
+    <!-- Search -->
+    <div class="search-box" style="max-width:360px;margin-bottom:var(--sp-5)">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="seller-search" placeholder="Search seller name or shop..." oninput="searchSellers()">
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">Sellers (<span id="seller-count">0</span>)</span>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Shop</th>
+              <th>Owner</th>
+              <th>District</th>
+              <th>Rating</th>
+              <th>Total Sales</th>
+              <th>Joined</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sellers-tbody">
+            <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading sellers...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Seller Detail Modal -->
+<div class="modal-overlay" id="seller-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-seller-title">Seller Details</span>
+      <span class="modal-close" data-modal-close>✕</span>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-5)" id="seller-detail-grid"></div>
+    </div>
+    <div class="modal-footer" id="seller-modal-footer"></div>
+  </div>
+</div>
+
+<script type="module">
+  import { fetchAdminSellers, approveSeller, suspendSeller } from '../js/api.js';
+  import { requireRole, getUser } from '../js/auth.js';
+  import { showToast, formatDate, openModal, closeModal } from '../js/main.js';
+  import '../js/main.js';
+
+  requireRole('admin');
+
+  const user = getUser();
+  if (user) {
+    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'A';
+    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'A';
+    document.getElementById('sidebar-name').textContent   = user.name || 'Admin';
+  }
+
+  let allSellers  = [];
+  let currentFilter = 'all';
+  let selectedSeller = null;
+
+  async function loadSellers() {
+    const res = await fetchAdminSellers();
+    if (!res.ok || !res.data) return;
+    allSellers = res.data;
+    renderSellers(allSellers);
+  }
+
+  function renderSellers(sellers) {
+    document.getElementById('seller-count').textContent = sellers.length;
+    const tbody = document.getElementById('sellers-tbody');
+    if (!sellers.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted)">No sellers found</td></tr>';
+      return;
+    }
+    tbody.innerHTML = sellers.map(s => `
+      <tr>
+        <td>
+          <div class="td-avatar">
+            <div class="td-img-placeholder" style="width:38px;height:38px;border-radius:var(--r);background:hsl(262,70%,92%);display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0">🏪</div>
+            <div>
+              <div class="td-name">${s.shop_name}</div>
+              <div class="td-sub">📞 ${s.phone}</div>
+            </div>
+          </div>
+        </td>
+        <td>${s.name}</td>
+        <td>${s.district}</td>
+        <td>⭐ ${s.rating}</td>
+        <td>${s.total_sales.toLocaleString()}</td>
+        <td>${formatDate(s.joined)}</td>
+        <td>
+          ${s.is_approved
+            ? '<span class="seller-status-active">● Active</span>'
+            : '<span class="seller-status-pending">● Pending</span>'}
+        </td>
+        <td>
+          <div class="table-actions-cell">
+            <button class="btn btn-ghost btn-sm" onclick="viewSeller(${s.id})">👁 View</button>
+            ${!s.is_approved
+              ? `<button class="btn btn-success btn-sm" onclick="handleApprove(${s.id})">✅ Approve</button>`
+              : `<button class="btn btn-danger btn-sm" onclick="handleSuspend(${s.id})">🚫 Suspend</button>`}
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  window.filterSellers = function(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    let list = allSellers;
+    if (filter === 'pending')   list = allSellers.filter(s => !s.is_approved);
+    if (filter === 'approved')  list = allSellers.filter(s => s.is_approved);
+    if (filter === 'suspended') list = allSellers.filter(s => !s.is_approved);
+    renderSellers(list);
+  };
+
+  window.searchSellers = function() {
+    const q = document.getElementById('seller-search').value.toLowerCase();
+    renderSellers(allSellers.filter(s =>
+      s.shop_name.toLowerCase().includes(q) || s.name.toLowerCase().includes(q) || s.district.toLowerCase().includes(q)
+    ));
+  };
+
+  window.viewSeller = function(id) {
+    selectedSeller = allSellers.find(s => s.id === id);
+    if (!selectedSeller) return;
+    const s = selectedSeller;
+    document.getElementById('modal-seller-title').textContent = s.shop_name;
+    document.getElementById('seller-detail-grid').innerHTML = `
+      <div class="form-group"><label class="form-label">Shop Name</label><input class="form-control" value="${s.shop_name}" readonly></div>
+      <div class="form-group"><label class="form-label">Owner</label><input class="form-control" value="${s.name}" readonly></div>
+      <div class="form-group"><label class="form-label">Phone</label><input class="form-control" value="${s.phone}" readonly></div>
+      <div class="form-group"><label class="form-label">District</label><input class="form-control" value="${s.district}" readonly></div>
+      <div class="form-group"><label class="form-label">Rating</label><input class="form-control" value="⭐ ${s.rating}" readonly></div>
+      <div class="form-group"><label class="form-label">Total Sales</label><input class="form-control" value="${s.total_sales.toLocaleString()}" readonly></div>
+      <div class="form-group"><label class="form-label">Joined</label><input class="form-control" value="${formatDate(s.joined)}" readonly></div>
+      <div class="form-group"><label class="form-label">Status</label><input class="form-control" value="${s.is_approved ? 'Active' : 'Pending Approval'}" readonly></div>
+    `;
+    const footer = document.getElementById('seller-modal-footer');
+    footer.innerHTML = `
+      <button class="btn btn-ghost" data-modal-close>Close</button>
+      ${!s.is_approved
+        ? `<button class="btn btn-success" onclick="handleApprove(${s.id});closeModal('seller-modal')">✅ Approve Seller</button>`
+        : `<button class="btn btn-danger" onclick="handleSuspend(${s.id});closeModal('seller-modal')">🚫 Suspend Seller</button>`}
+    `;
+    openModal('seller-modal');
+  };
+
+  window.handleApprove = async function(id) {
+    const res = await approveSeller(id);
+    if (res.ok) {
+      const s = allSellers.find(s => s.id === id);
+      if (s) s.is_approved = true;
+      showToast('Seller approved! They can now list products.', 'success');
+      renderSellers(allSellers);
+    } else { showToast('Failed to approve seller', 'error'); }
+  };
+
+  window.handleSuspend = async function(id) {
+    if (!confirm('Are you sure you want to suspend this seller?')) return;
+    const res = await suspendSeller(id);
+    if (res.ok) {
+      const s = allSellers.find(s => s.id === id);
+      if (s) s.is_approved = false;
+      showToast('Seller suspended', 'warning');
+      renderSellers(allSellers);
+    } else { showToast('Failed to suspend seller', 'error'); }
+  };
+
+  loadSellers();
+</script>
+</body>
+</html>

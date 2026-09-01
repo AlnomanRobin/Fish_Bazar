@@ -1,0 +1,192 @@
+/* =====================================================
+   FishBazar — Product Detail Page CSS
+   ===================================================== */
+
+.product-page { padding-top: calc(var(--navbar-h) + var(--sp-8)); padding-bottom: var(--sp-16); }
+
+/* Gallery */
+.product-gallery { position: sticky; top: calc(var(--navbar-h) + var(--sp-6)); }
+.gallery-main {
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background: var(--bg-secondary);
+  margin-bottom: var(--sp-4);
+  cursor: zoom-in;
+  position: relative;
+}
+.gallery-main img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.gallery-main:hover img { transform: scale(1.04); }
+.gallery-thumbs { display: flex; gap: var(--sp-3); }
+.gallery-thumb {
+  width: 72px; height: 72px;
+  border-radius: var(--r);
+  overflow: hidden;
+  cursor: pointer;
+  border: 2.5px solid transparent;
+  transition: all var(--t-fast);
+  flex-shrink: 0;
+}
+.gallery-thumb:hover, .gallery-thumb.active { border-color: var(--primary); }
+.gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Product Info */
+.product-info { padding-left: var(--sp-8); }
+.product-category-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--secondary);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  margin-bottom: var(--sp-3);
+  transition: color var(--t-fast);
+}
+.product-category-link:hover { color: var(--primary); }
+
+.product-title    { font-size: var(--fs-4xl); font-weight: 800; line-height: 1.2; margin-bottom: var(--sp-2); }
+.product-title-bn { font-family: var(--font-bn); font-size: var(--fs-2xl); color: var(--text-secondary); font-weight: 400; margin-bottom: var(--sp-4); }
+
+.product-rating-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+.product-review-count { font-size: var(--fs-sm); color: var(--text-muted); }
+
+.product-price-block {
+  background: linear-gradient(135deg, rgba(13,79,92,0.06), rgba(26,143,160,0.04));
+  border: 1px solid rgba(13,79,92,0.1);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-5);
+}
+.product-price {
+  font-size: var(--fs-5xl);
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+}
+.product-price .cur { font-size: var(--fs-3xl); }
+.product-per-kg { font-size: var(--fs-sm); color: var(--text-muted); margin-top: var(--sp-1); font-family: var(--font-bn); }
+.product-stock {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  margin-top: var(--sp-3);
+}
+.stock-dot { width: 8px; height: 8px; border-radius: var(--r-full); }
+.stock-dot.in-stock { background: var(--success); box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+.stock-dot.low      { background: var(--warning); }
+.stock-dot.out      { background: var(--danger);  }
+
+/* Options */
+.product-options { margin-bottom: var(--sp-5); }
+.product-option-label { font-size: var(--fs-sm); font-weight: 700; margin-bottom: var(--sp-3); color: var(--text-secondary); }
+.cleaning-options { display: flex; gap: var(--sp-3); }
+.cleaning-opt {
+  padding: var(--sp-2) var(--sp-4);
+  border: 2px solid hsl(220,15%,85%);
+  border-radius: var(--r);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: all var(--t-fast);
+  background: var(--bg-card);
+  font-weight: 500;
+}
+.cleaning-opt:hover, .cleaning-opt.active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(13,79,92,0.06);
+}
+
+/* Qty + Cart */
+.product-cart-row {
+  display: flex;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  align-items: flex-end;
+}
+.qty-group { }
+.qty-group-label { font-size: var(--fs-xs); color: var(--text-muted); margin-bottom: var(--sp-2); font-weight: 600; }
+
+/* Seller card */
+.seller-card {
+  background: var(--bg-secondary);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-5);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  border: 1px solid rgba(0,0,0,0.06);
+  transition: box-shadow var(--t-fast);
+}
+.seller-card:hover { box-shadow: var(--shadow-sm); }
+.seller-card-avatar {
+  width: 52px; height: 52px;
+  border-radius: var(--r-full);
+  background: var(--seller);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: var(--fs-xl);
+  flex-shrink: 0;
+}
+.seller-card-name { font-weight: 700; font-size: var(--fs-base); margin-bottom: 2px; }
+.seller-card-meta { font-size: var(--fs-xs); color: var(--text-muted); display: flex; gap: var(--sp-3); }
+.seller-card-link {
+  margin-left: auto;
+  font-size: var(--fs-sm);
+  color: var(--secondary);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Fish info */
+.fish-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+.fish-info-item {
+  background: var(--bg-secondary);
+  border-radius: var(--r);
+  padding: var(--sp-4);
+  text-align: center;
+}
+.fish-info-icon  { font-size: 1.5rem; margin-bottom: var(--sp-2); }
+.fish-info-label { font-size: var(--fs-xs); color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+.fish-info-value { font-size: var(--fs-base); font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+
+/* Layout */
+.product-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-12);
+  margin-bottom: var(--sp-16);
+}
+
+/* Related */
+.related-section { margin-top: var(--sp-12); }
+
+@media (max-width: 900px) {
+  .product-layout { grid-template-columns: 1fr; }
+  .product-info { padding-left: 0; }
+  .product-gallery { position: static; }
+}
+@media (max-width: 600px) {
+  .product-cart-row { flex-direction: column; }
+  .fish-info-grid { grid-template-columns: repeat(2, 1fr); }
+  .cleaning-options { flex-wrap: wrap; }
+}

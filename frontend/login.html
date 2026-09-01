@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In / Register — FishBazar Bangladesh</title>
+  <link rel="icon" href="logo/Logo.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+</head>
+<body>
+
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="index.html" class="navbar-logo"><div class="logo-icon"><img src="logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span class="logo-bn">মাছের বাজার</span></div></a>
+    <div class="navbar-actions">
+      <a href="cart.html" class="navbar-btn cart-btn">🛒 <span class="cart-badge hidden">0</span></a>
+    </div>
+  </div>
+</nav>
+
+<div class="auth-page page-content">
+  <!-- Visual Side -->
+  <div class="auth-visual">
+    <div class="auth-visual-icon">🐟</div>
+    <div class="auth-visual-title">FishBazar</div>
+    <div class="auth-visual-sub">বাংলাদেশের সেরা মাছের বাজার</div>
+    <div class="auth-visual-features">
+      <div class="auth-visual-feature">
+        <span class="auth-visual-feature-icon">🚚</span>
+        <span class="auth-visual-feature-text">Same-day delivery across Bangladesh</span>
+      </div>
+      <div class="auth-visual-feature">
+        <span class="auth-visual-feature-icon">💵</span>
+        <span class="auth-visual-feature-text">Cash on Delivery — safe & easy</span>
+      </div>
+      <div class="auth-visual-feature">
+        <span class="auth-visual-feature-icon">🐟</span>
+        <span class="auth-visual-feature-text">100% fresh, certified sellers</span>
+      </div>
+      <div class="auth-visual-feature">
+        <span class="auth-visual-feature-icon">🏪</span>
+        <span class="auth-visual-feature-text">Sell your fish to 64 districts</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Side -->
+  <div class="auth-form-section">
+    <div class="auth-form-wrap">
+
+      <!-- TABS -->
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</div>
+        <div class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</div>
+      </div>
+
+      <!-- ===== LOGIN FORM ===== -->
+      <div id="login-form">
+        <div class="auth-header">
+          <h1 class="auth-title">Sign In</h1>
+          <p class="auth-subtitle">আপনার অ্যাকাউন্টে প্রবেশ করুন</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email</label>
+          <input type="text" class="form-control" id="login-email" placeholder="example@email.com" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <div class="password-input-wrap">
+            <input type="password" class="form-control" id="login-password" placeholder="আপনার পাসওয়ার্ড" autocomplete="current-password">
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('login-password', this)" aria-label="Toggle password visibility" title="Show/Hide Password">
+              <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Password Requirements Box -->
+        <div class="password-rules-card" id="login-password-rules">
+          <div class="password-rules-title">পাসওয়ার্ড শর্তসমূহ:</div>
+          <ul class="password-rules-list">
+            <li class="rule-item" id="rule-len">
+              <span class="rule-bullet">○</span>
+              <span class="rule-text">কমপক্ষে ৮ অক্ষর</span>
+            </li>
+            <li class="rule-item" id="rule-upper">
+              <span class="rule-bullet">○</span>
+              <span class="rule-text">একটি বড় হাতের অক্ষর (A-Z)</span>
+            </li>
+            <li class="rule-item" id="rule-lower">
+              <span class="rule-bullet">○</span>
+              <span class="rule-text">একটি ছোট হাতের অক্ষর (a-z)</span>
+            </li>
+            <li class="rule-item" id="rule-num">
+              <span class="rule-bullet">○</span>
+              <span class="rule-text">একটি সংখ্যা (0-9)</span>
+            </li>
+            <li class="rule-item" id="rule-special">
+              <span class="rule-bullet">○</span>
+              <span class="rule-text">একটি বিশেষ চিহ্ন (!@#$%^&*)</span>
+            </li>
+          </ul>
+        </div>
+
+        <button class="btn btn-signin btn-lg btn-full" onclick="handleLogin()" id="login-btn">Sign In</button>
+
+        <div style="display:flex;justify-content:center;margin-top:var(--sp-4)">
+          <a href="#" style="font-size:var(--fs-sm);color:var(--text-secondary)">Forgot password?</a>
+        </div>
+
+        <div class="auth-link">Don't have an account? <a onclick="switchTab('register')">Sign Up</a></div>
+
+        <!-- Demo Accounts Quick Access -->
+        <div class="demo-accounts-pill-box" style="margin-top:var(--sp-6)">
+          <div class="demo-pill-title">Demo Accounts (One-Click)</div>
+          <div class="demo-pill-group">
+            <button type="button" class="demo-pill" onclick="fillDemo('arif@example.com','Pass123!@')">👤 Customer Demo</button>
+            <button type="button" class="demo-pill" onclick="fillDemo('karim@example.com','Pass123!@')">🏪 Seller Demo</button>
+            <button type="button" class="demo-pill" onclick="fillDemo('admin@example.com','Pass123!@')">🔧 Admin Demo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REGISTER FORM ===== -->
+      <div id="register-form" class="hidden">
+        <div class="auth-header">
+          <h1 class="auth-title">Create Account</h1>
+          <p class="auth-subtitle">আপনার নতুন অ্যাকাউন্ট তৈরি করুন</p>
+        </div>
+
+        <!-- Role selector -->
+        <div style="margin-bottom:var(--sp-5)">
+          <div class="form-label" style="margin-bottom:var(--sp-3)">I want to:</div>
+          <div class="role-selector">
+            <div class="role-btn active" id="role-customer" onclick="selectRole('customer')">
+              <div class="role-btn-icon">🛒</div>
+              <div class="role-btn-label">Buy Fish</div>
+              <div class="role-btn-sub">Customer</div>
+            </div>
+            <div class="role-btn" id="role-seller" onclick="selectRole('seller')">
+              <div class="role-btn-icon">🏪</div>
+              <div class="role-btn-label">Sell Fish</div>
+              <div class="role-btn-sub">Seller</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full Name *</label>
+          <input type="text" class="form-control" id="reg-name" placeholder="e.g. Arif Rahman">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Email Address *</label>
+          <input type="email" class="form-control" id="reg-email" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-phone">Phone Number *</label>
+          <input type="tel" class="form-control" id="reg-phone" placeholder="+880 1X-XXXXXXXX">
+        </div>
+
+        <!-- Seller-only fields -->
+        <div id="seller-fields" class="hidden">
+          <div class="form-group">
+            <label class="form-label" for="reg-shop">Shop Name *</label>
+            <input type="text" class="form-control" id="reg-shop" placeholder="e.g. Padma Fresh Fish">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-district">Your District</label>
+            <select class="form-control" id="reg-district">
+              <option value="">Select your district</option>
+              <option>Dhaka</option><option>Chittagong</option><option>Rajshahi</option>
+              <option>Sylhet</option><option>Khulna</option><option>Barishal</option>
+              <option>Rangpur</option><option>Mymensingh</option><option>Cox's Bazar</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Password *</label>
+          <div class="password-input-wrap">
+            <input type="password" class="form-control" id="reg-password" placeholder="আপনার পাসওয়ার্ড লিখুন" autocomplete="new-password">
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('reg-password', this)" aria-label="Toggle password visibility" title="Show/Hide Password">
+              <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Register Password Rules -->
+        <div class="password-rules-card" id="reg-password-rules">
+          <div class="password-rules-title">পাসওয়ার্ড শর্তসমূহ:</div>
+          <ul class="password-rules-list">
+            <li class="rule-item" id="reg-rule-len">
+              <span class="rule-bullet">○</span>
+              <span class="rule-text">কমপক্ষে ৮ অক্ষর</span>
+            </li>
+            <li class="rule-item" id="reg-rule-upper">
+              <span class="rule-bullet">○</span>
+              <span class="rule-text">একটি বড় হাতের অক্ষর (A-Z)</span>
+            </li>
+            <li class="rule-item" id="reg-rule-lower">
+              <span class="rule-bullet">○</span>
+              <span class="rule-text">একটি ছোট হাতের অক্ষর (a-z)</span>
+            </li>
+            <li class="rule-item" id="reg-rule-num">
+              <span class="rule-bullet">○</span>
+              <span class="rule-text">একটি সংখ্যা (0-9)</span>
+            </li>
+            <li class="rule-item" id="reg-rule-special">
+              <span class="rule-bullet">○</span>
+              <span class="rule-text">একটি বিশেষ চিহ্ন (!@#$%^&*)</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-confirm">Confirm Password *</label>
+          <div class="password-input-wrap">
+            <input type="password" class="form-control" id="reg-confirm" placeholder="পাসওয়ার্ড পুনরায় লিখুন" autocomplete="new-password">
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('reg-confirm', this)" aria-label="Toggle password visibility" title="Show/Hide Password">
+              <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:var(--sp-5)">
+          <label style="display:flex;align-items:flex-start;gap:var(--sp-3);cursor:pointer;font-size:var(--fs-sm);color:var(--text-secondary)">
+            <input type="checkbox" id="terms-check" style="margin-top:3px;accent-color:#0d8278">
+            I agree to the <a href="#" style="color:#0d8278">Terms of Service</a> and <a href="#" style="color:#0d8278">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button class="btn btn-signin btn-lg btn-full" onclick="handleRegister()" id="register-btn">Create Account</button>
+        <div class="auth-link">Already have an account? <a onclick="switchTab('login')">Sign In</a></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { login, register, isLoggedIn, redirectToDashboard } from './js/auth.js';
+  import { showToast } from './js/main.js';
+  import './js/main.js';
+
+  // Redirect if already logged in
+  if (isLoggedIn()) redirectToDashboard();
+
+  // Tab switch
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('tab') === 'register') switchTab('register');
+
+  window.switchTab = function(tab) {
+    document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  };
+
+  let selectedRole = 'customer';
+  window.selectRole = function(role) {
+    selectedRole = role;
+    document.getElementById('role-customer').classList.toggle('active', role === 'customer');
+    document.getElementById('role-seller').classList.toggle('active', role === 'seller');
+    document.getElementById('seller-fields').classList.toggle('hidden', role !== 'seller');
+  };
+
+  // Toggle Password Visibility
+  window.togglePasswordVisibility = function(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const isPass = input.type === 'password';
+    input.type = isPass ? 'text' : 'password';
+    
+    // Toggle Eye Icon SVG
+    if (isPass) {
+      // Eye Off icon
+      btn.innerHTML = `<svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+    } else {
+      // Eye Open icon
+      btn.innerHTML = `<svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+    }
+  };
+
+  // Password Requirement Validator
+  function checkPasswordRules(password, prefix = 'rule') {
+    const rules = {
+      len: password.length >= 8,
+      upper: /[A-Z]/.test(password),
+      lower: /[a-z]/.test(password),
+      num: /[0-9]/.test(password),
+      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)
+    };
+
+    for (const [key, passed] of Object.entries(rules)) {
+      const el = document.getElementById(`${prefix}-${key}`);
+      if (el) {
+        el.classList.toggle('valid', passed);
+        const bullet = el.querySelector('.rule-bullet');
+        if (bullet) bullet.textContent = passed ? '✓' : '○';
+      }
+    }
+    return Object.values(rules).every(Boolean);
+  }
+
+  // Bind live password validation
+  const loginPassInput = document.getElementById('login-password');
+  if (loginPassInput) {
+    loginPassInput.addEventListener('input', (e) => {
+      checkPasswordRules(e.target.value, 'rule');
+    });
+  }
+
+  const regPassInput = document.getElementById('reg-password');
+  if (regPassInput) {
+    regPassInput.addEventListener('input', (e) => {
+      checkPasswordRules(e.target.value, 'reg-rule');
+    });
+  }
+
+  window.fillDemo = async function(email, pass, autoSubmit = true) {
+    const emailInput = document.getElementById('login-email');
+    const passInput = document.getElementById('login-password');
+    if (emailInput) emailInput.value = email;
+    if (passInput) {
+      passInput.value = pass;
+      checkPasswordRules(pass, 'rule');
+    }
+    if (autoSubmit) {
+      showToast('Signing in with demo account...', 'info');
+      await handleLogin();
+    } else {
+      showToast('Demo credentials filled', 'info');
+    }
+  };
+
+  window.handleLogin = async function() {
+    let email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!email || !password) { showToast('Please enter email and password', 'warning'); return; }
+
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true; btn.textContent = 'Signing in...';
+
+    const res = await login(email, password);
+    if (res.success) {
+      showToast(`Welcome back, ${res.user.name}!`, 'success');
+      const next = params.get('next');
+      setTimeout(() => {
+        if (next) window.location.href = next;
+        else redirectToDashboard();
+      }, 600);
+    } else {
+      showToast(res.error, 'error', 'Login Failed');
+      btn.disabled = false; btn.textContent = 'Sign In';
+    }
+  };
+
+  window.handleRegister = async function() {
+    const name     = document.getElementById('reg-name').value.trim();
+    const phone    = document.getElementById('reg-phone').value.trim();
+    const email    = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const confirm  = document.getElementById('reg-confirm').value;
+    const terms    = document.getElementById('terms-check').checked;
+
+    if (!name || !phone || !email || !password) { showToast('Please fill all required fields', 'warning'); return; }
+    if (password !== confirm) { showToast('Passwords do not match', 'error'); return; }
+    if (!terms) { showToast('Please accept the Terms of Service', 'warning'); return; }
+
+    const btn = document.getElementById('register-btn');
+    btn.disabled = true; btn.textContent = 'Creating account...';
+
+    const data = { name, phone, email, password, role: selectedRole };
+    if (selectedRole === 'seller') {
+      data.shop_name = document.getElementById('reg-shop').value.trim();
+      data.district  = document.getElementById('reg-district').value;
+    }
+
+    const res = await register(data);
+    if (res.success) {
+      showToast(`Account created! Welcome, ${res.user.name}! 🎉`, 'success');
+      setTimeout(() => redirectToDashboard(), 800);
+    } else {
+      showToast(res.error, 'error', 'Registration Failed');
+      btn.disabled = false; btn.textContent = 'Create Account';
+    }
+  };
+
+  // Enter key support
+  ['login-email','login-password'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+    }
+  });
+
+  ['reg-name', 'reg-email', 'reg-phone', 'reg-password', 'reg-confirm'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') handleRegister(); });
+    }
+  });
+</script>
+</body>
+</html>

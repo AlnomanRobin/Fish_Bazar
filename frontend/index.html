@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FishBazar - Bangladesh's freshest online fish market. Buy fresh hilsa, shrimp, rohu, catla and more. Delivered to your door with Cash on Delivery.">
+  <title>FishBazar — বাংলাদেশের সেরা মাছের বাজার</title>
+  <link rel="icon" href="logo/Logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/home.css">
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="index.html" class="navbar-logo">
+      <div class="logo-icon"><img src="logo/Logo.png" alt="FishBazar logo"></div>
+      <div>
+        FishBazar
+        <span class="logo-bn">মাছের বাজার</span>
+      </div>
+    </a>
+
+    <div class="navbar-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="global-search" placeholder="Search for fish... (e.g. Hilsa, Shrimp)">
+    </div>
+
+    <div class="navbar-actions">
+      <!-- Guest -->
+      <div id="nav-guest" class="flex gap-3 items-center">
+        <a href="login.html" class="navbar-btn">Login</a>
+        <a href="login.html?tab=register" class="btn btn-accent btn-sm">Sign Up</a>
+      </div>
+      <!-- Logged in (hidden by default) -->
+      <div id="nav-user" class="flex gap-3 items-center hidden">
+        <div class="nav-dropdown">
+          <div class="flex items-center gap-2" style="cursor:pointer;">
+            <div class="navbar-avatar" id="nav-avatar">U</div>
+            <span class="navbar-btn desktop-only" id="nav-username">User</span>
+          </div>
+          <div class="nav-dropdown-menu">
+            <a href="#" class="nav-dropdown-item" id="nav-dashboard">📊 Dashboard</a>
+            <a href="customer/orders.html" class="nav-dropdown-item">📦 My Orders</a>
+            <div class="nav-dropdown-divider"></div>
+            <span class="nav-dropdown-item danger" data-action="logout">🚪 Logout</span>
+          </div>
+        </div>
+      </div>
+      <!-- Cart -->
+      <a href="cart.html" class="navbar-btn cart-btn">
+        🛒
+        <span class="cart-badge hidden" id="cart-count">0</span>
+      </a>
+      <!-- Hamburger -->
+      <div class="navbar-hamburger" id="navbar-hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">🏠 Home</a>
+  <a href="shop.html">🐟 Shop</a>
+  <a href="login.html">🔑 Login / Register</a>
+  <a href="cart.html">🛒 Cart</a>
+</div>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero-bg-pattern"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <span class="hero-eyebrow">🐟 Bangladesh's #1 Fish Marketplace</span>
+        <h1 class="hero-title">
+          Fresh Fish <span class="highlight">Delivered</span><br>
+          To Your Door
+          <span class="hero-title-bn">বাংলাদেশের সেরা তাজা মাছ</span>
+        </h1>
+        <p class="hero-desc">
+          Direct from rivers and seas of Bangladesh. Hilsa, Shrimp, Rohu, and 100+ fresh fish varieties. Cash on delivery nationwide.
+        </p>
+        <div class="hero-search-bar">
+          <input type="text" id="hero-search" placeholder="What fish are you looking for? e.g. ইলিশ মাছ">
+          <button class="btn btn-primary" onclick="heroSearch()">Search</button>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-num" id="stat-products">500+</div>
+            <div class="hero-stat-label">Fish Varieties</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num" id="stat-sellers">120+</div>
+            <div class="hero-stat-label">Certified Sellers</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num" id="stat-districts">64</div>
+            <div class="hero-stat-label">Districts Covered</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-img-wrap">
+          <img src="https://images.unsplash.com/photo-1510130387422-82bed34b37e9?w=800&q=85" alt="Fresh Hilsa Fish">
+          <div class="hero-badge-fresh">
+            <span class="icon">⏱️</span>
+            <div>
+              <div class="text">Catch to Door</div>
+              <div class="sub">Within 12 hours</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wave-divider">
+    <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#f0f7f8"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ===== CATEGORIES ===== -->
+<section class="categories-section section-sm">
+  <div class="container">
+    <div class="section-title-row">
+      <div>
+        <h2 class="section-heading title-with-bar">Browse by Category</h2>
+        <p class="section-subheading">ক্যাটাগরি অনুযায়ী খুঁজুন</p>
+      </div>
+      <a href="shop.html" class="view-all">View All →</a>
+    </div>
+    <div class="categories-scroll" id="categories-container">
+      <!-- Rendered by JS -->
+      <div class="skeleton" style="width:150px;height:160px;border-radius:1.25rem;flex-shrink:0"></div>
+      <div class="skeleton" style="width:150px;height:160px;border-radius:1.25rem;flex-shrink:0"></div>
+      <div class="skeleton" style="width:150px;height:160px;border-radius:1.25rem;flex-shrink:0"></div>
+      <div class="skeleton" style="width:150px;height:160px;border-radius:1.25rem;flex-shrink:0"></div>
+      <div class="skeleton" style="width:150px;height:160px;border-radius:1.25rem;flex-shrink:0"></div>
+      <div class="skeleton" style="width:150px;height:160px;border-radius:1.25rem;flex-shrink:0"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURED PRODUCTS ===== -->
+<section class="featured-section section">
+  <div class="container">
+    <div class="section-title-row">
+      <div>
+        <h2 class="section-heading title-with-bar">Featured Fish</h2>
+        <p class="section-subheading">আজকের সেরা মাছ</p>
+      </div>
+      <a href="shop.html" class="view-all">View All Products →</a>
+    </div>
+    <div class="products-grid" id="featured-products">
+      <!-- Skeletons -->
+      <div class="skeleton" style="height:340px;border-radius:1.25rem"></div>
+      <div class="skeleton" style="height:340px;border-radius:1.25rem"></div>
+      <div class="skeleton" style="height:340px;border-radius:1.25rem"></div>
+      <div class="skeleton" style="height:340px;border-radius:1.25rem"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WHY CHOOSE US ===== -->
+<section class="features-section">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem;">
+      <h2 style="color:white;font-size:2rem;font-weight:800;">Why Choose FishBazar?</h2>
+      <p style="color:rgba(255,255,255,0.7);font-family:var(--font-bn);font-size:1.1rem;margin-top:0.5rem;">কেন আমাদের বেছে নেবেন?</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-item" data-animate>
+        <div class="feature-icon-wrap">🐟</div>
+        <h3 class="feature-title">100% Fresh Catch</h3>
+        <p class="feature-desc">All fish delivered within 12–24 hours of catch. Freshness guaranteed or your money back.</p>
+      </div>
+      <div class="feature-item" data-animate>
+        <div class="feature-icon-wrap">🚚</div>
+        <h3 class="feature-title">Same-Day Delivery</h3>
+        <p class="feature-desc">Order before 10 AM for same-day delivery in Dhaka. Nationwide delivery in 1–3 days.</p>
+      </div>
+      <div class="feature-item" data-animate>
+        <div class="feature-icon-wrap">💵</div>
+        <h3 class="feature-title">Cash on Delivery</h3>
+        <p class="feature-desc">Pay when you receive. No online payment required. Safe and convenient for everyone.</p>
+      </div>
+      <div class="feature-item" data-animate>
+        <div class="feature-icon-wrap">⚖️</div>
+        <h3 class="feature-title">Accurate Weight</h3>
+        <p class="feature-desc">Certified digital scales. What you order is what you get — guaranteed accurate weight.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== POPULAR REGIONS ===== -->
+<section class="regions-section section">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:var(--sp-10)">
+      <h2 class="section-heading">Popular Fishing Regions</h2>
+      <p class="section-subheading">বিখ্যাত মৎস্য অঞ্চল</p>
+    </div>
+    <div class="regions-grid">
+      <div class="region-card" onclick="window.location.href='shop.html?region=Padma'">
+        <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80" alt="Padma River">
+        <div class="region-overlay"></div>
+        <div class="region-label">
+          <div class="region-name">Padma River</div>
+          <div class="region-name-bn">পদ্মা নদী</div>
+        </div>
+      </div>
+      <div class="region-card" onclick="window.location.href='shop.html?region=Sundarban'">
+        <img src="https://images.unsplash.com/photo-1561043433-aaf687c4cf04?w=600&q=80" alt="Sundarban">
+        <div class="region-overlay"></div>
+        <div class="region-label">
+          <div class="region-name">Sundarban</div>
+          <div class="region-name-bn">সুন্দরবন</div>
+        </div>
+      </div>
+      <div class="region-card" onclick="window.location.href='shop.html?region=Cox'">
+        <img src="https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=600&q=80" alt="Cox's Bazar">
+        <div class="region-overlay"></div>
+        <div class="region-label">
+          <div class="region-name">Cox's Bazar</div>
+          <div class="region-name-bn">কক্সবাজার</div>
+        </div>
+      </div>
+      <div class="region-card" onclick="window.location.href='shop.html?region=Bay'">
+        <img src="https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=600&q=80" alt="Bay of Bengal">
+        <div class="region-overlay"></div>
+        <div class="region-label">
+          <div class="region-name">Bay of Bengal</div>
+          <div class="region-name-bn">বঙ্গোপসাগর</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NEWSLETTER ===== -->
+<section class="newsletter-section">
+  <div class="container">
+    <div class="newsletter-card">
+      <h2 style="color:white;font-size:2rem;font-weight:800;">Get Fresh Fish Deals</h2>
+      <p style="color:rgba(255,255,255,0.8);font-family:var(--font-bn);font-size:1rem;margin-top:0.5rem">প্রতিদিনের সেরা অফার পেতে সাইন আপ করুন</p>
+      <div class="newsletter-form">
+        <input type="email" id="newsletter-email" placeholder="Your email address">
+        <button class="btn btn-accent" onclick="subscribeNewsletter()">Subscribe</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">🐟 FishBazar</div>
+        <p class="footer-brand-desc">Bangladesh's freshest online fish market. Connecting fishermen directly with consumers across 64 districts.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook">📘</a>
+          <a href="#" aria-label="Instagram">📷</a>
+          <a href="#" aria-label="YouTube">📺</a>
+          <a href="#" aria-label="WhatsApp">💬</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Shop</div>
+        <div class="footer-links">
+          <a href="shop.html" class="footer-link">All Fish</a>
+          <a href="shop.html?category=hilsa" class="footer-link">Hilsa / ইলিশ</a>
+          <a href="shop.html?category=shrimp" class="footer-link">Shrimp / চিংড়ি</a>
+          <a href="shop.html?category=dried" class="footer-link">Dried Fish / শুঁটকি</a>
+          <a href="shop.html?category=live" class="footer-link">Live Fish</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Account</div>
+        <div class="footer-links">
+          <a href="login.html" class="footer-link">Login</a>
+          <a href="login.html?tab=register" class="footer-link">Register</a>
+          <a href="customer/orders.html" class="footer-link">My Orders</a>
+          <a href="seller/dashboard.html" class="footer-link">Sell on FishBazar</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Support</div>
+        <div class="footer-links">
+          <a href="#" class="footer-link">About Us</a>
+          <a href="#" class="footer-link">Contact</a>
+          <a href="#" class="footer-link">Delivery Info</a>
+          <a href="#" class="footer-link">Returns Policy</a>
+          <a href="#" class="footer-link">Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 FishBazar Bangladesh. All rights reserved.</span>
+      <span>মাছের বাজার — বাংলাদেশের সেরা অনলাইন মাছ বাজার</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import { fetchCategories, fetchProducts } from './js/api.js';
+  import { renderProductCard, showToast, animateCount, onVisible } from './js/main.js';
+  import './js/main.js';
+
+  function heroSearch() {
+    const q = document.getElementById('hero-search').value.trim();
+    if (q) window.location.href = `shop.html?search=${encodeURIComponent(q)}`;
+  }
+  window.heroSearch = heroSearch;
+  document.getElementById('hero-search').addEventListener('keydown', e => {
+    if (e.key === 'Enter') heroSearch();
+  });
+
+  function subscribeNewsletter() {
+    const email = document.getElementById('newsletter-email').value.trim();
+    if (!email) return showToast('Please enter your email', 'warning');
+    showToast('Thank you for subscribing! 🎉', 'success', 'Subscribed');
+    document.getElementById('newsletter-email').value = '';
+  }
+  window.subscribeNewsletter = subscribeNewsletter;
+
+  // Load categories
+  async function loadCategories() {
+    const res = await fetchCategories();
+    const container = document.getElementById('categories-container');
+    if (res.ok && res.data) {
+      container.innerHTML = res.data.map(cat => `
+        <div class="category-card" onclick="window.location.href='shop.html?category=${cat.id}'">
+          <span class="category-icon">${cat.icon}</span>
+          <div class="category-name">${cat.name_en}</div>
+          <span class="category-name-bn">${cat.name_bn}</span>
+          <span class="category-count">${cat.count} varieties</span>
+        </div>
+      `).join('');
+    }
+  }
+
+  // Load featured products
+  async function loadFeatured() {
+    const res = await fetchProducts({ featured: true });
+    const container = document.getElementById('featured-products');
+    if (res.ok && res.data) {
+      const products = res.data.results.slice(0, 8);
+      container.innerHTML = products.map(p => renderProductCard(p)).join('');
+      // Animate on visible
+      container.querySelectorAll('.product-card').forEach((card, i) => {
+        card.style.opacity = '0';
+        card.style.animationDelay = `${i * 80}ms`;
+        onVisible(card, el => { el.style.opacity = '1'; el.classList.add('animate-fade-in-up'); });
+        card.addEventListener('click', e => {
+          if (!e.target.closest('button')) {
+            window.location.href = `product.html?slug=${card.dataset.slug || card.dataset.id}`;
+          }
+        });
+      });
+    }
+  }
+
+  // Animate hero stats
+  function animateStats() {
+    const el1 = document.getElementById('stat-products');
+    const el2 = document.getElementById('stat-sellers');
+    const el3 = document.getElementById('stat-districts');
+    onVisible(el1, () => {
+      el1.textContent = '0+'; animateCount(el1, 500); el1.textContent += '+';
+    });
+  }
+
+  loadCategories();
+  loadFeatured();
+</script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Shop fresh fish online in Bangladesh. Filter by category, region, and price. Hilsa, Shrimp, Rohu, Catla and more.">
+  <title>Shop Fresh Fish — FishBazar Bangladesh</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/shop.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="index.html" class="navbar-logo">
+      <div class="logo-icon"><img src="logo/Logo.png" alt="FishBazar logo"></div>
+      <div>FishBazar <span class="logo-bn">মাছের বাজার</span></div>
+    </a>
+    <div class="navbar-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="global-search" placeholder="Search fish...">
+    </div>
+    <div class="navbar-actions">
+      <div id="nav-guest" class="flex gap-3 items-center">
+        <a href="login.html" class="navbar-btn">Login</a>
+        <a href="login.html?tab=register" class="btn btn-accent btn-sm">Sign Up</a>
+      </div>
+      <div id="nav-user" class="flex gap-3 items-center hidden">
+        <div class="nav-dropdown">
+          <div class="flex items-center gap-2" style="cursor:pointer">
+            <div class="navbar-avatar" id="nav-avatar">U</div>
+            <span class="navbar-btn desktop-only" id="nav-username">User</span>
+          </div>
+          <div class="nav-dropdown-menu">
+            <a href="#" class="nav-dropdown-item" id="nav-dashboard">📊 Dashboard</a>
+            <div class="nav-dropdown-divider"></div>
+            <span class="nav-dropdown-item danger" data-action="logout">🚪 Logout</span>
+          </div>
+        </div>
+      </div>
+      <a href="cart.html" class="navbar-btn cart-btn">🛒 <span class="cart-badge hidden">0</span></a>
+      <div class="navbar-hamburger" id="navbar-hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</nav>
+
+<div class="shop-page page-content">
+  <!-- Hero -->
+  <div class="shop-hero">
+    <div class="container">
+      <h1>Fresh Fish Marketplace</h1>
+      <p>তাজা মাছ কিনুন — সরাসরি জেলেদের কাছ থেকে</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="shop-layout">
+
+      <!-- ===== FILTER SIDEBAR ===== -->
+      <aside class="filter-sidebar">
+        <div class="filter-card">
+          <div class="filter-card-header">
+            <span class="filter-card-title">🔧 Filters</span>
+            <span class="filter-clear" onclick="clearAllFilters()">Clear All</span>
+          </div>
+
+          <!-- Category -->
+          <div class="filter-section">
+            <div class="filter-section-title">Category</div>
+            <div id="filter-categories">
+              <div class="skeleton" style="height:20px;margin-bottom:10px"></div>
+              <div class="skeleton" style="height:20px;margin-bottom:10px"></div>
+              <div class="skeleton" style="height:20px;margin-bottom:10px"></div>
+            </div>
+          </div>
+
+          <!-- Price Range -->
+          <div class="filter-section">
+            <div class="filter-section-title">Price per kg (৳)</div>
+            <div class="price-range-inputs">
+              <input type="number" id="filter-min-price" placeholder="Min" min="0">
+              <input type="number" id="filter-max-price" placeholder="Max" max="5000">
+            </div>
+            <input type="range" class="range-slider" id="price-slider" min="0" max="3000" value="3000" step="50">
+          </div>
+
+          <!-- Region -->
+          <div class="filter-section">
+            <div class="filter-section-title">Region</div>
+            <div class="filter-option"><input type="checkbox" id="r-padma" value="Padma River"><label for="r-padma">Padma River</label><span class="filter-option-count">8</span></div>
+            <div class="filter-option"><input type="checkbox" id="r-sundarban" value="Sundarban"><label for="r-sundarban">Sundarban</label><span class="filter-option-count">5</span></div>
+            <div class="filter-option"><input type="checkbox" id="r-cox" value="Cox's Bazar"><label for="r-cox">Cox's Bazar</label><span class="filter-option-count">7</span></div>
+            <div class="filter-option"><input type="checkbox" id="r-bay" value="Bay of Bengal"><label for="r-bay">Bay of Bengal</label><span class="filter-option-count">9</span></div>
+            <div class="filter-option"><input type="checkbox" id="r-meghna" value="Meghna River"><label for="r-meghna">Meghna River</label><span class="filter-option-count">4</span></div>
+          </div>
+
+          <!-- Freshness -->
+          <div class="filter-section">
+            <div class="filter-section-title">Freshness</div>
+            <div class="filter-option"><input type="checkbox" id="fresh-12" value="12"><label for="fresh-12">Super Fresh (&lt;12h)</label></div>
+            <div class="filter-option"><input type="checkbox" id="fresh-24" value="24"><label for="fresh-24">Very Fresh (&lt;24h)</label></div>
+            <div class="filter-option"><input type="checkbox" id="fresh-dried" value="8760"><label for="fresh-dried">Dried Fish</label></div>
+          </div>
+
+          <div class="filter-section">
+            <button class="btn btn-primary btn-full" onclick="applyFilters()">Apply Filters</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ===== MAIN PRODUCT AREA ===== -->
+      <main class="shop-main">
+        <!-- Toolbar -->
+        <div class="shop-toolbar">
+          <div class="search-box" style="max-width:320px">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="shop-search" placeholder="Search fish name (EN or বাংলা)...">
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="shop-sort">
+              <span class="sort-label">Sort by:</span>
+              <select class="sort-select" id="sort-select" onchange="applyFilters()">
+                <option value="">Default</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+                <option value="newest">Newest First</option>
+              </select>
+            </div>
+            <div class="view-toggle">
+              <button class="view-btn active" id="grid-view-btn" onclick="setView('grid')" title="Grid">⊞</button>
+              <button class="view-btn" id="list-view-btn" onclick="setView('list')" title="List">☰</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Filters -->
+        <div class="active-filters" id="active-filters"></div>
+
+        <!-- Result count -->
+        <div class="shop-result-count" id="result-count" style="margin-bottom:var(--sp-4)">
+          Showing <span id="count-num">0</span> products
+        </div>
+
+        <!-- Products -->
+        <div class="products-grid" id="products-container">
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0">
+      <span>© 2024 FishBazar Bangladesh</span>
+      <span><a href="index.html" style="color:var(--accent)">← Back to Home</a></span>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import { fetchProducts, fetchCategories } from './js/api.js';
+  import { renderProductCard, showToast, onVisible } from './js/main.js';
+  import './js/main.js';
+
+  let currentView = 'grid';
+  let currentFilters = {};
+
+  // Parse URL params
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('search'))   currentFilters.search     = params.get('search');
+  if (params.get('category')) currentFilters.category   = params.get('category');
+  if (params.get('region'))   currentFilters.region     = params.get('region');
+  if (params.get('featured')) currentFilters.featured   = params.get('featured');
+
+  if (currentFilters.search) document.getElementById('shop-search').value = currentFilters.search;
+
+  // Load categories for filter
+  async function loadFilterCategories() {
+    const res = await fetchCategories();
+    if (!res.ok) return;
+    const container = document.getElementById('filter-categories');
+    container.innerHTML = res.data.map(cat => `
+      <div class="filter-option">
+        <input type="checkbox" id="cat-${cat.id}" value="${cat.id}" ${currentFilters.category == cat.id ? 'checked' : ''}
+          onchange="applyFilters()">
+        <label for="cat-${cat.id}">${cat.icon} ${cat.name_en}</label>
+        <span class="filter-option-count">${cat.count}</span>
+      </div>
+    `).join('');
+  }
+
+  // Load products
+  async function loadProducts(filters = {}) {
+    const container = document.getElementById('products-container');
+    container.innerHTML = Array(8).fill('<div class="skeleton skeleton-card"></div>').join('');
+
+    const res = await fetchProducts(filters);
+    if (!res.ok || !res.data) {
+      container.innerHTML = '<div class="no-results"><div class="no-results-icon">🐟</div><h3>No fish found</h3><p>Try adjusting your filters</p></div>';
+      return;
+    }
+
+    const { count, results } = res.data;
+    document.getElementById('count-num').textContent = count;
+
+    if (!results.length) {
+      container.innerHTML = '<div class="no-results" style="grid-column:1/-1"><div class="no-results-icon">🔍</div><h3>No results found</h3><p>Try different keywords or filters</p></div>';
+      return;
+    }
+
+    if (currentView === 'grid') {
+      container.className = 'products-grid';
+      container.innerHTML = results.map(p => renderProductCard(p)).join('');
+    } else {
+      container.className = 'products-list';
+      container.innerHTML = results.map(p => `
+        <div class="product-list-item animate-fade-in" onclick="window.location.href='product.html?slug=${p.slug}'">
+          <img class="product-list-img" src="${p.img}" alt="${p.name_en}" onerror="this.src='https://placehold.co/300x200/0d4f5c/white?text=Fish'">
+          <div class="product-list-body">
+            <div class="product-card-category">${p.category?.name_en}</div>
+            <div class="product-card-name">${p.name_en} <span class="name-bn">${p.name_bn}</span></div>
+            <div class="product-card-seller"><span class="product-card-seller-dot"></span>${p.seller?.shop_name || ''}</div>
+            <div style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted)">📍 ${p.region} &nbsp;·&nbsp; ⏱ ${p.freshness_hours < 100 ? p.freshness_hours+'h freshness' : 'Dried'}</div>
+          </div>
+          <div class="product-list-actions">
+            <div class="product-card-price" style="font-size:1.5rem">৳${p.price_per_kg}<span style="font-size:0.75rem;font-weight:400">/kg</span></div>
+            <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();handleAddToCart(${p.id})">🛒 Add</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Click-to-product
+    container.querySelectorAll('.product-card').forEach(card => {
+      card.addEventListener('click', e => {
+        if (!e.target.closest('button')) {
+          const product = results.find(p => p.id === +card.dataset.id);
+          if (product) window.location.href = `product.html?slug=${product.slug}`;
+        }
+      });
+    });
+  }
+
+  window.applyFilters = function() {
+    const search   = document.getElementById('shop-search').value.trim();
+    const sort     = document.getElementById('sort-select').value;
+    const minPrice = document.getElementById('filter-min-price').value;
+    const maxPrice = document.getElementById('filter-max-price').value;
+    const checkedCats = [...document.querySelectorAll('#filter-categories input:checked')].map(i => i.value);
+
+    currentFilters = {};
+    if (search)              currentFilters.search    = search;
+    if (sort)                currentFilters.sort      = sort;
+    if (minPrice)            currentFilters.min_price = minPrice;
+    if (maxPrice)            currentFilters.max_price = maxPrice;
+    if (checkedCats.length)  currentFilters.category  = checkedCats[0];
+
+    renderActiveFilters();
+    loadProducts(currentFilters);
+  };
+
+  window.clearAllFilters = function() {
+    document.querySelectorAll('#filter-categories input').forEach(i => i.checked = false);
+    document.getElementById('filter-min-price').value = '';
+    document.getElementById('filter-max-price').value = '';
+    document.getElementById('shop-search').value = '';
+    document.getElementById('sort-select').value = '';
+    currentFilters = {};
+    document.getElementById('active-filters').innerHTML = '';
+    loadProducts({});
+  };
+
+  function renderActiveFilters() {
+    const af = document.getElementById('active-filters');
+    const tags = [];
+    if (currentFilters.search)    tags.push(`Search: "${currentFilters.search}"`);
+    if (currentFilters.category) {
+      const cat = document.querySelector(`#filter-categories input[value="${currentFilters.category}"]`);
+      if (cat) tags.push(cat.nextElementSibling.textContent.trim());
+    }
+    if (currentFilters.min_price) tags.push(`Min: ৳${currentFilters.min_price}`);
+    if (currentFilters.max_price) tags.push(`Max: ৳${currentFilters.max_price}`);
+    af.innerHTML = tags.map(t => `<span class="active-filter-tag">${t} <span class="remove" onclick="clearAllFilters()">✕</span></span>`).join('');
+  }
+
+  window.setView = function(view) {
+    currentView = view;
+    document.getElementById('grid-view-btn').classList.toggle('active', view === 'grid');
+    document.getElementById('list-view-btn').classList.toggle('active', view === 'list');
+    loadProducts(currentFilters);
+  };
+
+  // Search on Enter
+  document.getElementById('shop-search').addEventListener('keydown', e => {
+    if (e.key === 'Enter') applyFilters();
+  });
+
+  // Price slider
+  document.getElementById('price-slider').addEventListener('input', e => {
+    document.getElementById('filter-max-price').value = e.target.value;
+  });
+
+  loadFilterCategories();
+  loadProducts(currentFilters);
+</script>
+</body>
+</html>

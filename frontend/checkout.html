@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — FishBazar Bangladesh</title>
+  <link rel="icon" href="logo/Logo.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+</head>
+<body>
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="index.html" class="navbar-logo"><div class="logo-icon"><img src="logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span class="logo-bn">মাছের বাজার</span></div></a>
+    <div class="navbar-actions">
+      <div id="nav-guest" class="flex gap-3 items-center"><a href="login.html" class="navbar-btn">Login</a></div>
+      <div id="nav-user" class="flex gap-3 items-center hidden">
+        <div class="navbar-avatar" id="nav-avatar">U</div>
+      </div>
+      <a href="cart.html" class="navbar-btn cart-btn">🛒 <span class="cart-badge hidden">0</span></a>
+    </div>
+  </div>
+</nav>
+
+<div class="checkout-page page-content">
+  <div class="container-sm">
+
+    <!-- Success Screen (hidden by default) -->
+    <div id="order-success-screen" class="hidden">
+      <div style="background:var(--bg-card);border-radius:var(--r-xl);box-shadow:var(--shadow-lg);padding:var(--sp-8)">
+        <div class="order-success">
+          <div class="success-icon-wrap">✅</div>
+          <h2>Order Confirmed!</h2>
+          <p class="bn" style="font-size:var(--fs-2xl);color:var(--success);font-weight:700;margin-bottom:var(--sp-3)">আপনার অর্ডার নিশ্চিত হয়েছে!</p>
+          <p>Your order has been placed successfully. Our delivery team will prepare your fresh fish immediately.</p>
+          
+          <div class="order-id" id="success-order-id">ORD-2024-XXXX</div>
+          
+          <div id="success-payment-badge" style="margin:0 auto var(--sp-6);display:inline-block;padding:var(--sp-3) var(--sp-6);border-radius:var(--r-full);font-weight:700;font-size:var(--fs-sm);background:rgba(13,79,92,0.08);color:var(--primary)">
+            Payment Status: Paid
+          </div>
+
+          <div class="flex gap-4" style="justify-content:center;flex-wrap:wrap;margin-top:var(--sp-4)">
+            <a href="customer/orders.html" class="btn btn-primary btn-lg">📦 Track Order (অর্ডার ট্র্যাক করুন)</a>
+            <a href="index.html" class="btn btn-outline btn-lg">← Continue Shopping</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkout Form -->
+    <div id="checkout-form-section">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a><span class="breadcrumb-sep">›</span>
+        <a href="cart.html">Cart</a><span class="breadcrumb-sep">›</span>
+        <span>Checkout</span>
+      </div>
+      <h1 style="font-size:var(--fs-3xl);font-weight:800;margin-bottom:var(--sp-8)">Checkout & Payment</h1>
+
+      <div class="checkout-layout">
+        <!-- Left: Form -->
+        <div>
+          <!-- Step 1: Customer Info -->
+          <div class="checkout-card">
+            <div class="checkout-card-header">
+              <div class="checkout-step-num">1</div>
+              <div class="checkout-step-title">Delivery Information (ডেলিভারি ঠিকানা)</div>
+            </div>
+            <div class="checkout-card-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="full-name">Full Name (পূর্ণ নাম) *</label>
+                  <input type="text" class="form-control" id="full-name" placeholder="e.g. Arif Rahman" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="phone">Phone Number (মোবাইল নম্বর) *</label>
+                  <input type="tel" class="form-control" id="phone" placeholder="+880 17XXXXXXXX" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="address">Delivery Address (সম্পূর্ণ ঠিকানা) *</label>
+                <textarea class="form-control" id="address" rows="3" placeholder="House no, Road no, Area, City..." required></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="checkout-district">District (জেলা) *</label>
+                  <select class="form-control" id="checkout-district" required>
+                    <option value="">Select District</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="delivery-slot">Delivery Slot (সময়) *</label>
+                  <select class="form-control" id="delivery-slot">
+                    <option value="morning">Morning (8 AM – 12 PM)</option>
+                    <option value="afternoon">Afternoon (12 PM – 5 PM)</option>
+                    <option value="evening">Evening (5 PM – 9 PM)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="instructions">Special Instructions (ঐচ্ছিক নির্দেশনা)</label>
+                <input type="text" class="form-control" id="instructions" placeholder="e.g. Call before delivery, ring bell...">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Payment Methods -->
+          <div class="checkout-card">
+            <div class="checkout-card-header">
+              <div class="checkout-step-num">2</div>
+              <div class="checkout-step-title">Payment Method (পেমেন্ট পদ্ধতি)</div>
+            </div>
+            <div class="checkout-card-body">
+              <div class="payment-options">
+
+                <!-- bKash Option -->
+                <label class="payment-option bkash" id="opt-bkash-label" onclick="selectPayment('bkash')">
+                  <input type="radio" name="payment" id="payment-bkash" value="bkash">
+                  <span class="payment-option-icon" style="background:#fdf2f7;color:#e2136e">📱</span>
+                  <div style="flex:1">
+                    <div class="payment-option-label">
+                      <span>bKash (বিকাশ)</span>
+                      <span class="payment-badge badge-bkash">⚡ Instant Payment</span>
+                    </div>
+                    <div class="payment-option-desc">Pay instantly using your bKash digital wallet (01XXXXXXXXX).</div>
+                    
+                    <!-- bKash inline panel -->
+                    <div id="bkash-panel" class="payment-details-panel bkash hidden" onclick="event.stopPropagation()">
+                      <div class="form-group" style="margin-bottom:8px">
+                        <label class="form-label" style="color:#b80c55;font-size:0.85rem">bKash Account Number (বিকাশ নম্বর)</label>
+                        <input type="tel" class="form-control" id="bkash-phone" placeholder="017XXXXXXXX" maxlength="11" style="border-color:#e2136e">
+                      </div>
+                      <div style="font-size:0.78rem;color:#64748b;line-height:1.4">
+                        💡 Click "Pay with bKash" below to open the secure simulation gateway & complete payment with OTP/PIN.
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <!-- Nagad Option -->
+                <label class="payment-option nagad" id="opt-nagad-label" onclick="selectPayment('nagad')">
+                  <input type="radio" name="payment" id="payment-nagad" value="nagad">
+                  <span class="payment-option-icon" style="background:#fef7ed;color:#f7941d">📱</span>
+                  <div style="flex:1">
+                    <div class="payment-option-label">
+                      <span>Nagad (নগদ)</span>
+                      <span class="payment-badge badge-nagad">⚡ Instant Payment</span>
+                    </div>
+                    <div class="payment-option-desc">Fast and secure payment with your Nagad wallet number.</div>
+                    
+                    <!-- Nagad inline panel -->
+                    <div id="nagad-panel" class="payment-details-panel nagad hidden" onclick="event.stopPropagation()">
+                      <div class="form-group" style="margin-bottom:8px">
+                        <label class="form-label" style="color:#c2410c;font-size:0.85rem">Nagad Account Number (নগদ নম্বর)</label>
+                        <input type="tel" class="form-control" id="nagad-phone" placeholder="01XXXXXXXXX" maxlength="11" style="border-color:#f7941d">
+                      </div>
+                      <div style="font-size:0.78rem;color:#64748b;line-height:1.4">
+                        💡 Click "Pay with Nagad" to complete your transaction via secure simulation gateway.
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <!-- Card Option -->
+                <label class="payment-option card" id="opt-card-label" onclick="selectPayment('card')">
+                  <input type="radio" name="payment" id="payment-card" value="card">
+                  <span class="payment-option-icon" style="background:#eff6ff;color:#2563eb">💳</span>
+                  <div style="flex:1">
+                    <div class="payment-option-label">
+                      <span>Credit / Debit Card (কার্ড সিস্টেম)</span>
+                      <span class="payment-badge badge-card">Visa / Mastercard / AMEX / Nexus</span>
+                    </div>
+                    <div class="payment-option-desc">Pay directly using any Bangladeshi or International Bank Card.</div>
+                    
+                    <!-- Card inline panel -->
+                    <div id="card-panel" class="payment-details-panel card hidden" onclick="event.stopPropagation()">
+                      <div class="form-group" style="margin-bottom:10px">
+                        <label class="form-label" style="font-size:0.85rem">Card Number (কার্ড নম্বর)</label>
+                        <input type="text" class="form-control" id="card-num" placeholder="4123 4567 8901 2345" maxlength="19" oninput="formatCardNumber(this)">
+                      </div>
+                      <div class="form-row" style="margin-bottom:10px">
+                        <div class="form-group" style="margin-bottom:0">
+                          <label class="form-label" style="font-size:0.85rem">Cardholder Name</label>
+                          <input type="text" class="form-control" id="card-holder" placeholder="Name on card">
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                          <div class="form-group" style="margin-bottom:0">
+                            <label class="form-label" style="font-size:0.85rem">Expiry</label>
+                            <input type="text" class="form-control" id="card-exp" placeholder="MM/YY" maxlength="5" oninput="formatCardExpiry(this)">
+                          </div>
+                          <div class="form-group" style="margin-bottom:0">
+                            <label class="form-label" style="font-size:0.85rem">CVV</label>
+                            <input type="password" class="form-control" id="card-cvv" placeholder="•••" maxlength="4">
+                          </div>
+                        </div>
+                      </div>
+                      <div style="font-size:0.76rem;color:#2563eb;display:flex;align-items:center;gap:6px">
+                        🔒 256-bit Bank Grade SSL Security & 3D Secure Verification
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <!-- Cash on Delivery Option -->
+                <label class="payment-option selected" id="opt-cod-label" onclick="selectPayment('cod')">
+                  <input type="radio" name="payment" id="payment-cod" value="cod" checked>
+                  <span class="payment-option-icon" style="background:#ecfdf5;color:#059669">💵</span>
+                  <div style="flex:1">
+                    <div class="payment-option-label">
+                      <span>Cash on Delivery (ক্যাশ অন ডেলিভারি)</span>
+                      <span class="payment-badge badge-cod">Pay on Delivery</span>
+                    </div>
+                    <div class="payment-option-desc">Pay with cash when your fresh fish arrives at your doorstep.</div>
+                  </div>
+                </label>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Place Order / Pay Button -->
+          <button class="btn btn-primary btn-lg btn-full" id="place-order-btn" onclick="handlePlaceOrderClick()" style="font-size:1.1rem;padding:16px">
+            ✅ Place Order — Cash on Delivery
+          </button>
+        </div>
+
+        <!-- Right: Summary -->
+        <div>
+          <div class="order-summary-card">
+            <h2 class="summary-title">Order Review (অর্ডার সারাংশ)</h2>
+            <div id="checkout-items-list" style="margin-bottom:var(--sp-5)"></div>
+            <hr class="divider">
+            <div class="summary-row"><span>Subtotal (মাছের মূল্য)</span><span class="amount">৳<span id="co-subtotal">0</span></span></div>
+            <div class="summary-row"><span>Delivery Charge (ডেলিভারি চার্জ)</span><span class="amount">৳<span id="co-delivery">0</span></span></div>
+            <div class="summary-row total"><span>Total Amount (সর্বমোট)</span><span class="amount">৳<span id="co-total">0</span></span></div>
+            <div id="co-payment-badge" class="cod-badge" style="margin-top:var(--sp-4)">💵 Cash on Delivery</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAYMENT GATEWAY MODAL SIMULATOR ===== -->
+<div id="gateway-modal" class="gateway-modal hidden">
+  <div class="gateway-card" id="gateway-card">
+    <div class="gateway-header" id="gateway-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:1.75rem" id="gw-icon">📱</span>
+        <div>
+          <h3 style="color:#ffffff;margin:0;font-size:1.15rem" id="gw-title">bKash Payment</h3>
+          <div style="font-size:0.75rem;opacity:0.9">Merchant: FishBazar Bangladesh</div>
+        </div>
+      </div>
+      <button type="button" onclick="closeGatewayModal()" style="background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer">✕</button>
+    </div>
+
+    <div class="gateway-body">
+      <div class="gateway-amount-box">
+        <div>
+          <div style="font-size:0.75rem;color:#64748b;font-weight:600">INVOICE AMOUNT</div>
+          <div style="font-size:1.25rem;font-weight:800;color:#0f172a">৳<span id="gw-amount">0</span></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:0.75rem;color:#64748b;font-weight:600">ORDER REF</div>
+          <div style="font-size:0.85rem;font-weight:700;color:#0d8278" id="gw-ref">FB-8942</div>
+        </div>
+      </div>
+
+      <!-- Gateway Step 1: Phone / Account Confirmation -->
+      <div id="gw-step-1">
+        <div class="form-group">
+          <label class="form-label" id="gw-acc-label">Your Wallet / Account Number</label>
+          <input type="text" class="form-control" id="gw-acc-input" placeholder="01XXXXXXXXX" style="font-size:1.05rem;letter-spacing:0.05em">
+        </div>
+        <div style="font-size:0.8rem;color:#64748b;margin-bottom:18px">
+          By confirming, you will receive an instant verification code to approve this payment.
+        </div>
+        <div style="display:flex;gap:10px">
+          <button type="button" class="btn btn-ghost flex-1" onclick="closeGatewayModal()">Cancel</button>
+          <button type="button" class="btn btn-primary flex-1" id="gw-next-btn" onclick="goToGatewayStep2()">Proceed →</button>
+        </div>
+      </div>
+
+      <!-- Gateway Step 2: OTP / PIN Verification -->
+      <div id="gw-step-2" class="hidden">
+        <div class="form-group">
+          <label class="form-label">Enter 6-digit Verification Code (OTP)</label>
+          <input type="text" class="form-control" id="gw-otp-input" value="842915" maxlength="6" style="font-size:1.2rem;letter-spacing:0.2em;text-align:center">
+          <div class="form-hint" style="text-align:center;margin-top:4px">Demo OTP: <strong>842915</strong> (Auto-filled)</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="gw-pin-label">Enter 5-digit PIN</label>
+          <input type="password" class="form-control" id="gw-pin-input" placeholder="•••••" maxlength="5" style="font-size:1.2rem;letter-spacing:0.2em;text-align:center">
+        </div>
+        <button type="button" class="btn btn-primary btn-full btn-lg" id="gw-confirm-btn" onclick="executeGatewayPayment()">
+          🔒 Confirm Payment (৳<span id="gw-btn-amount">0</span>)
+        </button>
+      </div>
+
+      <!-- Gateway Step 3: Success Loading / Animation -->
+      <div id="gw-step-3" class="hidden" style="text-align:center;padding:24px 0">
+        <div style="font-size:3rem;margin-bottom:12px;animation:spin 1s linear infinite">⏳</div>
+        <h4 style="font-size:1.15rem;margin-bottom:6px">Processing Payment...</h4>
+        <p style="color:#64748b;font-size:0.85rem">Communicating with bank payment gateway. Please wait.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { getCart, getCartSubtotal, clearCart } from './js/cart.js';
+  import { fetchDistricts, placeOrder as apiPlaceOrder } from './js/api.js';
+  import { getUser } from './js/auth.js';
+  import { showToast } from './js/main.js';
+  import './js/main.js';
+
+  let districtData = null;
+  let selectedMethod = 'cod';
+
+  // Pre-fill user data if logged in
+  function prefillUserData() {
+    const user = getUser();
+    if (user) {
+      if (user.name)  document.getElementById('full-name').value = user.name;
+      if (user.phone) document.getElementById('phone').value = user.phone;
+      if (user.address) document.getElementById('address').value = user.address;
+    }
+  }
+
+  // Load districts
+  async function loadDistricts() {
+    const res = await fetchDistricts();
+    if (!res.ok) return;
+
+    const prevDist = sessionStorage.getItem('fb_checkout_district');
+    const prev = prevDist ? JSON.parse(prevDist) : null;
+
+    const sel = document.getElementById('checkout-district');
+    res.data.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value      = JSON.stringify(d);
+      opt.textContent= `${d.name} (${d.name_bn}) — ৳${d.charge}`;
+      if (prev && prev.id === d.id) { opt.selected = true; districtData = d; }
+      sel.appendChild(opt);
+    });
+
+    if (!districtData && res.data.length > 0) {
+      districtData = res.data[0];
+      sel.value = JSON.stringify(districtData);
+    }
+
+    sel.addEventListener('change', () => {
+      const val = sel.value;
+      districtData = val ? JSON.parse(val) : null;
+      updateSummary();
+    });
+
+    updateSummary();
+  }
+
+  // Render cart items
+  function renderReview() {
+    const cart = getCart();
+    const container = document.getElementById('checkout-items-list');
+    container.innerHTML = cart.map(item => `
+      <div style="display:flex;align-items:center;gap:1rem;padding:0.75rem 0;border-bottom:1px dashed hsl(220,15%,90%)">
+        <img src="${item.img}" alt="${item.name_en}" style="width:50px;height:45px;border-radius:0.5rem;object-fit:cover" onerror="this.src='https://placehold.co/50x45/0d4f5c/white?text=Fish'">
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:0.88rem">${item.name_en}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">${item.quantity_kg} kg × ৳${item.price_per_kg} ${item.cleaning ? '· '+item.cleaning : ''}</div>
+        </div>
+        <div style="font-weight:700;color:var(--primary)">৳${(item.price_per_kg * item.quantity_kg).toLocaleString()}</div>
+      </div>
+    `).join('') || '<div style="color:var(--text-muted);text-align:center;padding:1rem">Your cart is empty</div>';
+  }
+
+  function updateSummary() {
+    const subtotal = getCartSubtotal();
+    const delivery = districtData?.charge || 0;
+    const total    = subtotal + delivery;
+    document.getElementById('co-subtotal').textContent = subtotal.toLocaleString();
+    document.getElementById('co-delivery').textContent = delivery.toLocaleString();
+    document.getElementById('co-total').textContent    = total.toLocaleString();
+
+    // Update button text
+    updateButtonLabel(total);
+  }
+
+  function updateButtonLabel(total) {
+    const btn = document.getElementById('place-order-btn');
+    const badge = document.getElementById('co-payment-badge');
+    if (selectedMethod === 'bkash') {
+      btn.style.background = '#e2136e';
+      btn.style.borderColor = '#e2136e';
+      btn.textContent = `⚡ Pay ৳${total.toLocaleString()} with bKash (বিকাশ)`;
+      badge.textContent = '📱 bKash Payment';
+      badge.style.color = '#e2136e';
+    } else if (selectedMethod === 'nagad') {
+      btn.style.background = '#f7941d';
+      btn.style.borderColor = '#f7941d';
+      btn.textContent = `⚡ Pay ৳${total.toLocaleString()} with Nagad (নগদ)`;
+      badge.textContent = '📱 Nagad Payment';
+      badge.style.color = '#f7941d';
+    } else if (selectedMethod === 'card') {
+      btn.style.background = '#2563eb';
+      btn.style.borderColor = '#2563eb';
+      btn.textContent = `💳 Pay ৳${total.toLocaleString()} with Bank Card`;
+      badge.textContent = '💳 Card Payment';
+      badge.style.color = '#2563eb';
+    } else {
+      btn.style.background = 'var(--primary)';
+      btn.style.borderColor = 'var(--primary)';
+      btn.textContent = `✅ Place Order — Cash on Delivery (৳${total.toLocaleString()})`;
+      badge.textContent = '💵 Cash on Delivery';
+      badge.style.color = 'var(--primary)';
+    }
+  }
+
+  // Payment Selection Handler
+  window.selectPayment = function(method) {
+    selectedMethod = method;
+    ['bkash', 'nagad', 'card', 'cod'].forEach(m => {
+      const opt = document.getElementById(`opt-${m}-label`);
+      const radio = document.getElementById(`payment-${m}`);
+      const panel = document.getElementById(`${m}-panel`);
+      
+      const isCurrent = m === method;
+      if (opt) opt.classList.toggle('selected', isCurrent);
+      if (radio) radio.checked = isCurrent;
+      if (panel) panel.classList.toggle('hidden', !isCurrent);
+    });
+
+    const subtotal = getCartSubtotal();
+    const delivery = districtData?.charge || 0;
+    updateButtonLabel(subtotal + delivery);
+  };
+
+  // Card Formatting helpers
+  window.formatCardNumber = function(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 16);
+    let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
+    input.value = formatted;
+  };
+
+  window.formatCardExpiry = function(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 4);
+    if (val.length >= 2) {
+      input.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+    } else {
+      input.value = val;
+    }
+  };
+
+  // Place order trigger
+  window.handlePlaceOrderClick = function() {
+    const name    = document.getElementById('full-name').value.trim();
+    const phone   = document.getElementById('phone').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const district= document.getElementById('checkout-district').value;
+
+    if (!name || !phone || !address || !district) {
+      showToast('Please fill in your delivery name, phone, and address', 'warning', 'Missing Info');
+      return;
+    }
+
+    const cart = getCart();
+    if (!cart || cart.length === 0) {
+      showToast('Your cart is empty', 'warning');
+      return;
+    }
+
+    const subtotal = getCartSubtotal();
+    const distObj  = JSON.parse(district);
+    const total    = subtotal + distObj.charge;
+
+    if (selectedMethod === 'cod') {
+      // Direct COD order
+      finalizeOrder({
+        method: 'cod',
+        payment_status: 'Unpaid (COD)',
+        transaction_id: 'COD-' + Math.floor(Math.random()*900000+100000)
+      });
+    } else {
+      // Open Gateway Simulation Modal
+      openGatewayModal(selectedMethod, total, phone);
+    }
+  };
+
+  // Gateway Modal controls
+  function openGatewayModal(method, total, userPhone) {
+    const modal = document.getElementById('gateway-modal');
+    const header = document.getElementById('gateway-header');
+    const title = document.getElementById('gw-title');
+    const icon = document.getElementById('gw-icon');
+    const amountSpan = document.getElementById('gw-amount');
+    const btnAmountSpan = document.getElementById('gw-btn-amount');
+    const refSpan = document.getElementById('gw-ref');
+    const accLabel = document.getElementById('gw-acc-label');
+    const accInput = document.getElementById('gw-acc-input');
+
+    amountSpan.textContent = total.toLocaleString();
+    btnAmountSpan.textContent = total.toLocaleString();
+    refSpan.textContent = 'FB-' + Math.floor(Math.random()*9000+1000);
+
+    header.className = `gateway-header ${method}`;
+
+    // Reset steps
+    document.getElementById('gw-step-1').classList.remove('hidden');
+    document.getElementById('gw-step-2').classList.add('hidden');
+    document.getElementById('gw-step-3').classList.add('hidden');
+
+    if (method === 'bkash') {
+      title.textContent = 'bKash Payment Gateway';
+      icon.textContent = '📱';
+      accLabel.textContent = 'bKash Mobile Number';
+      const inlineBkash = document.getElementById('bkash-phone').value.trim();
+      accInput.value = inlineBkash || userPhone || '01711234567';
+    } else if (method === 'nagad') {
+      title.textContent = 'Nagad Payment Gateway';
+      icon.textContent = '📱';
+      accLabel.textContent = 'Nagad Account Number';
+      const inlineNagad = document.getElementById('nagad-phone').value.trim();
+      accInput.value = inlineNagad || userPhone || '01811234567';
+    } else if (method === 'card') {
+      title.textContent = 'Secure Card Checkout (Visa/Mastercard)';
+      icon.textContent = '💳';
+      accLabel.textContent = 'Card Number';
+      const inlineCard = document.getElementById('card-num').value.trim();
+      accInput.value = inlineCard || '4123 4567 8901 2345';
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  window.closeGatewayModal = function() {
+    document.getElementById('gateway-modal').classList.add('hidden');
+  };
+
+  window.goToGatewayStep2 = function() {
+    const acc = document.getElementById('gw-acc-input').value.trim();
+    if (!acc) {
+      showToast('Please enter your account number', 'warning');
+      return;
+    }
+    document.getElementById('gw-step-1').classList.add('hidden');
+    document.getElementById('gw-step-2').classList.remove('hidden');
+  };
+
+  window.executeGatewayPayment = function() {
+    const pin = document.getElementById('gw-pin-input').value.trim();
+    if (!pin) {
+      showToast('Please enter your PIN / CVV to authorize', 'warning');
+      return;
+    }
+
+    document.getElementById('gw-step-2').classList.add('hidden');
+    document.getElementById('gw-step-3').classList.remove('hidden');
+
+    setTimeout(() => {
+      closeGatewayModal();
+      const prefix = selectedMethod === 'bkash' ? 'BK' : selectedMethod === 'nagad' ? 'NG' : 'CARD';
+      const trxId = prefix + '-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+      
+      finalizeOrder({
+        method: selectedMethod,
+        payment_status: 'Paid',
+        transaction_id: trxId
+      });
+    }, 1200);
+  };
+
+  async function finalizeOrder(paymentDetails) {
+    const name    = document.getElementById('full-name').value.trim();
+    const phone   = document.getElementById('phone').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const district= document.getElementById('checkout-district').value;
+    const distObj = JSON.parse(district);
+    const cart    = getCart();
+
+    const orderData = {
+      items:            cart.map(i=>({ product_id: i.product_id, quantity_kg: i.quantity_kg, price: i.price_per_kg, product: i })),
+      delivery_address: address,
+      district:         distObj.name,
+      payment_method:   paymentDetails.method,
+      payment_status:   paymentDetails.payment_status,
+      transaction_id:   paymentDetails.transaction_id,
+      customer_name:    name,
+      phone,
+      slot:             document.getElementById('delivery-slot').value,
+      instructions:     document.getElementById('instructions').value,
+      total:            getCartSubtotal() + distObj.charge,
+      date:             new Date().toISOString()
+    };
+
+    const res = await apiPlaceOrder(orderData);
+
+    if (res.ok) {
+      clearCart();
+      document.getElementById('checkout-form-section').classList.add('hidden');
+      document.getElementById('order-success-screen').classList.remove('hidden');
+      document.getElementById('success-order-id').textContent = res.data.id;
+      
+      const badge = document.getElementById('success-payment-badge');
+      if (paymentDetails.method === 'bkash') {
+        badge.innerHTML = `📱 Paid via <strong>bKash</strong> · TrxID: <code>${paymentDetails.transaction_id}</code>`;
+        badge.style.background = '#fdf2f7';
+        badge.style.color = '#e2136e';
+      } else if (paymentDetails.method === 'nagad') {
+        badge.innerHTML = `📱 Paid via <strong>Nagad</strong> · TrxID: <code>${paymentDetails.transaction_id}</code>`;
+        badge.style.background = '#fef7ed';
+        badge.style.color = '#f7941d';
+      } else if (paymentDetails.method === 'card') {
+        badge.innerHTML = `💳 Paid via <strong>Credit/Debit Card</strong> · TrxID: <code>${paymentDetails.transaction_id}</code>`;
+        badge.style.background = '#eff6ff';
+        badge.style.color = '#2563eb';
+      } else {
+        badge.innerHTML = `💵 Payment: <strong>Cash on Delivery</strong> · Pay on arrival`;
+        badge.style.background = '#ecfdf5';
+        badge.style.color = '#059669';
+      }
+
+      showToast('Order confirmed successfully! 🎉', 'success');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      showToast('Failed to place order. Please try again.', 'error');
+    }
+  }
+
+  // Initialize checkout
+  prefillUserData();
+  loadDistricts();
+  renderReview();
+</script>
+</body>
+</html>

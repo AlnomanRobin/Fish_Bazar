@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Orders — FishBazar Admin</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+</head>
+<body>
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo"><div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span style="font-size:0.7rem;font-weight:700;color:var(--danger);text-transform:uppercase">Admin</span></div></a>
+    <div class="navbar-actions"><div class="navbar-avatar" id="nav-avatar" style="background:var(--danger)">A</div></div>
+  </div>
+</nav>
+
+<div class="dashboard-layout admin-dash">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><span class="sidebar-role-badge admin">🔧 Admin</span></div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar" style="background:var(--danger)">A</div>
+      <div><div class="sidebar-user-name" id="sidebar-name">Admin</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">📊</span> Dashboard</a>
+      <a href="sellers.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">🏪</span> Sellers</a>
+      <a href="customers.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">👥</span> Customers</a>
+      <a href="products.html"  class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> Products</a>
+      <a href="orders.html"    class="sidebar-nav-link active"><span class="sidebar-nav-icon">📦</span> All Orders</a>
+    </nav>
+    <div class="sidebar-footer"><span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span></div>
+  </aside>
+
+  <main class="dashboard-content">
+    <div class="flex-between" style="margin-bottom:var(--sp-6)">
+      <div>
+        <h1 style="font-size:var(--fs-3xl);font-weight:800">📦 All Orders</h1>
+        <p style="color:var(--text-muted)">Platform-wide order management</p>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="loadOrders()">🔄 Refresh</button>
+    </div>
+
+    <!-- Stats row -->
+    <div class="kpi-grid" style="margin-bottom:var(--sp-6)" id="order-stats">
+      <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">Total Orders</span><div class="kpi-icon teal">📦</div></div><div class="kpi-value" id="stat-total">0</div></div>
+      <div class="kpi-card accent"><div class="kpi-header"><span class="kpi-label">Pending</span><div class="kpi-icon gold">⏳</div></div><div class="kpi-value" id="stat-pending">0</div></div>
+      <div class="kpi-card success"><div class="kpi-header"><span class="kpi-label">Delivered</span><div class="kpi-icon green">✅</div></div><div class="kpi-value" id="stat-delivered">0</div></div>
+      <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">Revenue</span><div class="kpi-icon purple">৳</div></div><div class="kpi-value" id="stat-revenue">—</div></div>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-chips" style="margin-bottom:var(--sp-4)">
+      <span class="filter-chip active" onclick="filterOrders('all', this)">All</span>
+      <span class="filter-chip" onclick="filterOrders('pending', this)">⏳ Pending</span>
+      <span class="filter-chip" onclick="filterOrders('shipped', this)">🚚 Shipped</span>
+      <span class="filter-chip" onclick="filterOrders('delivered', this)">✅ Delivered</span>
+      <span class="filter-chip" onclick="filterOrders('cancelled', this)">❌ Cancelled</span>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">Orders (<span id="order-count">0</span>)</span>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Order ID</th><th>Customer</th><th>District</th><th>Items</th><th>Total</th><th>Payment</th><th>Date</th><th>Status</th></tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import { fetchAdminOrders } from '../js/api.js';
+  import { requireRole, getUser } from '../js/auth.js';
+  import { showToast, formatDate } from '../js/main.js';
+  import '../js/main.js';
+
+  requireRole('admin');
+  const user = getUser();
+  if (user) {
+    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'A';
+    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'A';
+    document.getElementById('sidebar-name').textContent   = user.name || 'Admin';
+  }
+
+  const STATUS_CLASS = { pending:'status-pending', confirmed:'status-confirmed', shipped:'status-shipped', delivered:'status-delivered', cancelled:'status-cancelled' };
+  let allOrders = [];
+
+  window.loadOrders = async function() {
+    const res = await fetchAdminOrders();
+    if (!res.ok || !res.data) return;
+    allOrders = res.data;
+
+    // Stats
+    document.getElementById('stat-total').textContent     = allOrders.length;
+    document.getElementById('stat-pending').textContent   = allOrders.filter(o=>o.status==='pending').length;
+    document.getElementById('stat-delivered').textContent = allOrders.filter(o=>o.status==='delivered').length;
+    document.getElementById('stat-revenue').textContent   = '৳' + allOrders.reduce((s,o)=>s+o.total,0).toLocaleString();
+
+    renderOrders(allOrders);
+  };
+
+  function renderOrders(orders) {
+    document.getElementById('order-count').textContent = orders.length;
+    const tbody = document.getElementById('orders-tbody');
+    if (!orders.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted)">No orders found</td></tr>'; return; }
+    tbody.innerHTML = orders.map(o => `
+      <tr>
+        <td><strong>${o.id}</strong></td>
+        <td>
+          <div class="td-name">${o.customer?.name || 'Customer'}</div>
+          <div class="td-sub">${o.customer?.phone || ''}</div>
+        </td>
+        <td>${o.district}</td>
+        <td>${o.items.length} item(s)</td>
+        <td><strong>৳${o.total.toLocaleString()}</strong></td>
+        <td><span class="badge badge-success" style="font-size:var(--fs-xs)">💵 COD</span></td>
+        <td>${formatDate(o.date)}</td>
+        <td><span class="order-status ${STATUS_CLASS[o.status]}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  window.filterOrders = function(status, el) {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderOrders(status === 'all' ? allOrders : allOrders.filter(o => o.status === status));
+  };
+
+  loadOrders();
+</script>
+</body>
+</html>

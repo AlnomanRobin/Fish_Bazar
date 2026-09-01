@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — FishBazar</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+</head>
+<body>
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo"><div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span style="font-size:0.7rem;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:0.08em">Admin</span></div></a>
+    <div class="navbar-actions">
+      <div class="nav-dropdown">
+        <div class="navbar-avatar" id="nav-avatar" style="background:var(--danger);cursor:pointer">A</div>
+        <div class="nav-dropdown-menu">
+          <a href="../index.html" class="nav-dropdown-item">🏠 View Site</a>
+          <span class="nav-dropdown-item danger" data-action="logout">🚪 Logout</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout admin-dash">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><span class="sidebar-role-badge admin">🔧 Admin</span></div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar" style="background:var(--danger)">A</div>
+      <div><div class="sidebar-user-name" id="sidebar-name">Admin</div><div class="sidebar-user-email">Super Administrator</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-label">Overview</div>
+      <a href="dashboard.html" class="sidebar-nav-link active"><span class="sidebar-nav-icon">📊</span> Dashboard</a>
+      <div class="sidebar-nav-label">Management</div>
+      <a href="sellers.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">🏪</span> Sellers <span class="sidebar-nav-badge danger" id="pending-count">2</span></a>
+      <a href="customers.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">👥</span> Customers</a>
+      <a href="products.html"  class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> Products</a>
+      <a href="orders.html"    class="sidebar-nav-link"><span class="sidebar-nav-icon">📦</span> All Orders</a>
+      <div class="sidebar-nav-label">Site</div>
+      <a href="../index.html"  class="sidebar-nav-link"><span class="sidebar-nav-icon">🌐</span> View Storefront</a>
+    </nav>
+    <div class="sidebar-footer"><span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dashboard-content">
+    <!-- Header -->
+    <div class="admin-dash-header">
+      <div>
+        <h1 style="font-size:var(--fs-3xl);font-weight:800">Admin Dashboard</h1>
+        <div class="admin-dash-date" id="dash-date"></div>
+      </div>
+      <div class="flex gap-3">
+        <button class="btn btn-outline btn-sm" onclick="loadAll()">🔄 Refresh</button>
+        <a href="../index.html" class="btn btn-primary btn-sm">🌐 View Site</a>
+      </div>
+    </div>
+
+    <!-- Pending Seller Alert -->
+    <div class="seller-approval-alert" id="pending-alert" style="display:none">
+      <span class="seller-approval-alert-icon">⚠️</span>
+      <div class="seller-approval-alert-text">
+        <strong><span id="pending-num">0</span> sellers</strong> are awaiting approval to start selling on FishBazar.
+      </div>
+      <a href="sellers.html" class="btn btn-accent btn-sm">Review Now →</a>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header"><span class="kpi-label">Total Revenue</span><div class="kpi-icon gold">৳</div></div>
+        <div class="kpi-value" id="kpi-revenue">—</div>
+        <div class="kpi-change up">↑ All time</div>
+      </div>
+      <div class="kpi-card accent">
+        <div class="kpi-header"><span class="kpi-label">Orders Today</span><div class="kpi-icon teal">📦</div></div>
+        <div class="kpi-value" id="kpi-orders">—</div>
+        <div class="kpi-change up">↑ Today</div>
+      </div>
+      <div class="kpi-card success">
+        <div class="kpi-header"><span class="kpi-label">Active Sellers</span><div class="kpi-icon green">🏪</div></div>
+        <div class="kpi-value" id="kpi-sellers">—</div>
+        <div class="kpi-change">Approved</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header"><span class="kpi-label">Total Customers</span><div class="kpi-icon purple">👥</div></div>
+        <div class="kpi-value" id="kpi-customers">—</div>
+        <div class="kpi-change up">↑ Registered</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="admin-charts-grid">
+      <!-- Revenue chart -->
+      <div class="chart-card">
+        <div class="flex-between" style="margin-bottom:var(--sp-5)">
+          <h3 style="font-size:var(--fs-lg);font-weight:700">📈 Monthly Revenue (৳)</h3>
+          <span style="font-size:var(--fs-xs);color:var(--text-muted)">Last 12 months</span>
+        </div>
+        <canvas id="revenue-chart" height="220"></canvas>
+      </div>
+
+      <!-- Orders by Status donut -->
+      <div class="chart-card">
+        <h3 style="font-size:var(--fs-lg);font-weight:700;margin-bottom:var(--sp-5)">📊 Orders by Status</h3>
+        <canvas id="status-chart" height="180" style="max-height:180px"></canvas>
+        <div id="status-legend" style="margin-top:var(--sp-4)"></div>
+      </div>
+    </div>
+
+    <!-- Recent Sellers Pending -->
+    <div class="table-card" style="margin-bottom:var(--sp-6)">
+      <div class="table-header">
+        <span class="table-title">🏪 Recent Sellers</span>
+        <a href="sellers.html" class="btn btn-outline btn-sm">View All</a>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Shop Name</th>
+              <th>Owner</th>
+              <th>District</th>
+              <th>Rating</th>
+              <th>Sales</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="sellers-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">📦 Recent Orders</span>
+        <a href="orders.html" class="btn btn-outline btn-sm">View All</a>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>District</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import { fetchAdminStats, fetchAdminSellers, fetchAdminOrders, approveSeller, suspendSeller } from '../js/api.js';
+  import { requireRole, getUser } from '../js/auth.js';
+  import { showToast, formatDate, animateCount } from '../js/main.js';
+  import '../js/main.js';
+
+  requireRole('admin');
+
+  const user = getUser();
+  if (user) {
+    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'A';
+    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'A';
+    document.getElementById('sidebar-name').textContent   = user.name || 'Admin';
+  }
+
+  // Date
+  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-BD', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const STATUS_CLASS = { pending:'status-pending', confirmed:'status-confirmed', shipped:'status-shipped', delivered:'status-delivered', cancelled:'status-cancelled' };
+
+  window.loadAll = async function() {
+    loadStats();
+    loadSellers();
+    loadOrders();
+  };
+
+  async function loadStats() {
+    const res = await fetchAdminStats();
+    if (!res.ok || !res.data) return;
+    const s = res.data;
+
+    document.getElementById('kpi-revenue').textContent   = '৳' + (s.total_revenue/1000).toFixed(0) + 'k';
+    document.getElementById('kpi-orders').textContent    = s.orders_today;
+    document.getElementById('kpi-sellers').textContent   = s.active_sellers;
+    document.getElementById('kpi-customers').textContent = s.total_customers.toLocaleString();
+
+    if (s.pending_seller_approvals > 0) {
+      document.getElementById('pending-alert').style.display = 'flex';
+      document.getElementById('pending-num').textContent     = s.pending_seller_approvals;
+      document.getElementById('pending-count').textContent   = s.pending_seller_approvals;
+    }
+
+    drawRevenueChart(s.monthly_revenue);
+    drawStatusChart(s.orders_by_status);
+  }
+
+  async function loadSellers() {
+    const res = await fetchAdminSellers();
+    if (!res.ok || !res.data) return;
+    const sellers = res.data.slice(0, 5);
+    const tbody   = document.getElementById('sellers-tbody');
+    tbody.innerHTML = sellers.map(s => `
+      <tr>
+        <td>
+          <div class="td-name">${s.shop_name}</div>
+          <div class="td-sub">📍 ${s.district}</div>
+        </td>
+        <td>${s.name}</td>
+        <td>${s.district}</td>
+        <td>⭐ ${s.rating}</td>
+        <td>${s.total_sales.toLocaleString()} sales</td>
+        <td>
+          ${s.is_approved
+            ? '<span class="seller-status-active">● Active</span>'
+            : '<span class="seller-status-pending">● Pending</span>'}
+        </td>
+        <td>
+          ${!s.is_approved
+            ? `<button class="btn btn-success btn-sm" onclick="approveSellerById(${s.id}, this)">✅ Approve</button>`
+            : `<button class="btn btn-danger btn-sm" onclick="suspendSellerById(${s.id}, this)">🚫 Suspend</button>`}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function loadOrders() {
+    const res = await fetchAdminOrders();
+    if (!res.ok || !res.data) return;
+    const orders = res.data.slice(0, 5);
+    const tbody  = document.getElementById('orders-tbody');
+    tbody.innerHTML = orders.map(o => `
+      <tr>
+        <td><strong>${o.id}</strong></td>
+        <td>${o.customer?.name || 'Customer'}</td>
+        <td>${o.district}</td>
+        <td>${o.items.length} item(s)</td>
+        <td><strong>৳${o.total.toLocaleString()}</strong></td>
+        <td>${formatDate(o.date)}</td>
+        <td><span class="order-status ${STATUS_CLASS[o.status]}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  window.approveSellerById = async function(id, btn) {
+    btn.disabled = true; btn.textContent = '...';
+    const res = await approveSeller(id);
+    if (res.ok) { showToast('Seller approved!', 'success'); btn.closest('tr').querySelector('td:nth-child(6)').innerHTML = '<span class="seller-status-active">● Active</span>'; btn.outerHTML = `<button class="btn btn-danger btn-sm" onclick="suspendSellerById(${id}, this)">🚫 Suspend</button>`; }
+    else { showToast('Failed to approve', 'error'); btn.disabled = false; btn.textContent = '✅ Approve'; }
+  };
+
+  window.suspendSellerById = async function(id, btn) {
+    if (!confirm('Suspend this seller?')) return;
+    btn.disabled = true; btn.textContent = '...';
+    const res = await suspendSeller(id);
+    if (res.ok) { showToast('Seller suspended', 'warning'); btn.closest('tr').querySelector('td:nth-child(6)').innerHTML = '<span class="seller-status-suspended">● Suspended</span>'; btn.outerHTML = `<button class="btn btn-success btn-sm" onclick="approveSellerById(${id}, this)">✅ Approve</button>`; }
+    else { showToast('Failed to suspend', 'error'); btn.disabled = false; btn.textContent = '🚫 Suspend'; }
+  };
+
+  function drawRevenueChart(data) {
+    const canvas = document.getElementById('revenue-chart');
+    const ctx    = canvas.getContext('2d');
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = 220;
+
+    const max = Math.max(...data);
+    const pad = { top:20, right:20, bottom:40, left:65 };
+    const W   = canvas.width - pad.left - pad.right;
+    const H   = canvas.height - pad.top  - pad.bottom;
+    const barW= W / data.length - 8;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i <= 4; i++) {
+      const y = pad.top + H - (i / 4) * H;
+      ctx.strokeStyle = 'rgba(0,0,0,0.06)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + W, y); ctx.stroke();
+      ctx.fillStyle = 'hsl(220,10%,60%)'; ctx.font = '11px Inter, sans-serif'; ctx.textAlign = 'right';
+      ctx.fillText('৳' + Math.round((max * i / 4) / 1000) + 'k', pad.left - 8, y + 4);
+    }
+
+    data.forEach((val, i) => {
+      const x = pad.left + i * (W / data.length) + 4;
+      const h = (val / max) * H;
+      const y = pad.top + H - h;
+      const grad = ctx.createLinearGradient(0, y, 0, y + h);
+      grad.addColorStop(0, 'hsl(191,70%,42%)');
+      grad.addColorStop(1, 'hsl(191,70%,62%)');
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.roundRect(x, y, barW, h, [4, 4, 0, 0]); ctx.fill();
+      ctx.fillStyle = 'hsl(220,10%,55%)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(MONTHS[i], x + barW / 2, pad.top + H + 18);
+    });
+  }
+
+  function drawStatusChart(statusData) {
+    const canvas = document.getElementById('status-chart');
+    const ctx    = canvas.getContext('2d');
+    canvas.width = 180; canvas.height = 180;
+    const entries = Object.entries(statusData);
+    const total   = entries.reduce((s, [, v]) => s + v, 0);
+    const colors  = ['#f0a500','#0d4f5c','#22c55e','#3b82f6','#ef4444'];
+    let startAngle = -Math.PI / 2;
+    const cx = 90, cy = 90, r = 70, inner = 45;
+
+    entries.forEach(([key, val], i) => {
+      const slice = (val / total) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, startAngle, startAngle + slice);
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.fill();
+      startAngle += slice;
+    });
+    // Inner circle (donut hole)
+    ctx.beginPath(); ctx.arc(cx, cy, inner, 0, Math.PI * 2);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-card') || '#fff';
+    ctx.fill();
+    // Center text
+    ctx.fillStyle = '#374151'; ctx.font = 'bold 18px Inter'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(total, cx, cy);
+
+    // Legend
+    const legend = document.getElementById('status-legend');
+    legend.innerHTML = entries.map(([key, val], i) => `
+      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;margin-bottom:0.25rem">
+        <span style="width:12px;height:12px;border-radius:3px;background:${colors[i]};display:inline-block;flex-shrink:0"></span>
+        <span style="color:var(--text-secondary);text-transform:capitalize">${key}: <strong>${val}</strong></span>
+      </div>
+    `).join('');
+  }
+
+  loadAll();
+</script>
+</body>
+</html>

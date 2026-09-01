@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders — FishBazar</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+</head>
+<body>
+
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo"><div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span class="logo-bn">মাছের বাজার</span></div></a>
+    <div class="navbar-actions">
+      <a href="../shop.html" class="navbar-btn desktop-only">🐟 Shop</a>
+      <div class="nav-dropdown">
+        <div class="navbar-avatar" id="nav-avatar" style="cursor:pointer">U</div>
+        <div class="nav-dropdown-menu">
+          <span class="nav-dropdown-item danger" data-action="logout">🚪 Logout</span>
+        </div>
+      </div>
+      <a href="../cart.html" class="navbar-btn cart-btn">🛒 <span class="cart-badge hidden">0</span></a>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><span class="sidebar-role-badge customer">🛒 Customer</span></div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar">U</div>
+      <div><div class="sidebar-user-name" id="sidebar-name">Customer</div><div class="sidebar-user-email">My Account</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-label">My Account</div>
+      <a href="dashboard.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">🏠</span> Dashboard</a>
+      <a href="orders.html"    class="sidebar-nav-link active"><span class="sidebar-nav-icon">📦</span> My Orders</a>
+      <div class="sidebar-nav-label">Shopping</div>
+      <a href="../shop.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> Browse Fish</a>
+      <a href="../cart.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">🛒</span> My Cart</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span>
+    </div>
+  </aside>
+
+  <main class="dashboard-content">
+    <div class="flex-between" style="margin-bottom:var(--sp-8)">
+      <div>
+        <h1 style="font-size:var(--fs-3xl);font-weight:800">📦 My Orders</h1>
+        <p style="color:var(--text-muted);font-family:var(--font-bn)">আমার অর্ডার সমূহ</p>
+      </div>
+      <a href="../shop.html" class="btn btn-primary">+ Order More Fish</a>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-chips" style="margin-bottom:var(--sp-5)">
+      <span class="filter-chip active" data-filter="all" onclick="filterOrders('all', this)">All Orders</span>
+      <span class="filter-chip" data-filter="pending"   onclick="filterOrders('pending', this)">⏳ Pending</span>
+      <span class="filter-chip" data-filter="shipped"   onclick="filterOrders('shipped', this)">🚚 Shipped</span>
+      <span class="filter-chip" data-filter="delivered" onclick="filterOrders('delivered', this)">✅ Delivered</span>
+      <span class="filter-chip" data-filter="cancelled" onclick="filterOrders('cancelled', this)">❌ Cancelled</span>
+    </div>
+
+    <!-- Orders List -->
+    <div class="customer-orders-list" id="orders-list">
+      <div class="skeleton" style="height:80px;border-radius:var(--r-lg)"></div>
+      <div class="skeleton" style="height:80px;border-radius:var(--r-lg)"></div>
+      <div class="skeleton" style="height:80px;border-radius:var(--r-lg)"></div>
+    </div>
+
+    <!-- Empty state -->
+    <div id="orders-empty" class="empty-state hidden">
+      <div class="empty-state-icon">📦</div>
+      <h3>No orders found</h3>
+      <p>You haven't placed any orders yet. Start shopping!</p>
+      <a href="../shop.html" class="btn btn-primary">Browse Fresh Fish</a>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import { fetchMyOrders } from '../js/api.js';
+  import { requireRole, getUser } from '../js/auth.js';
+  import { addToCart } from '../js/cart.js';
+  import { showToast, formatDate, formatBDT } from '../js/main.js';
+  import '../js/main.js';
+
+  requireRole('customer');
+
+  const user = getUser();
+  if (user) {
+    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'C';
+    document.getElementById('sidebar-name').textContent   = user.name || 'Customer';
+    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'C';
+  }
+
+  const STATUS_CLASS = { pending:'status-pending', confirmed:'status-confirmed', processing:'status-processing', shipped:'status-shipped', delivered:'status-delivered', cancelled:'status-cancelled' };
+  let allOrders = [];
+  let currentFilter = 'all';
+
+  async function loadOrders() {
+    const res = await fetchMyOrders();
+    if (!res.ok || !res.data) return;
+    allOrders = res.data;
+    renderOrders(allOrders);
+  }
+
+  function renderOrders(orders) {
+    const list  = document.getElementById('orders-list');
+    const empty = document.getElementById('orders-empty');
+
+    if (!orders.length) {
+      list.innerHTML = '';
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+
+    list.innerHTML = orders.map(o => {
+      const pm = o.payment_method || 'cod';
+      let payBadge = '💵 Cash on Delivery';
+      if (pm === 'bkash') payBadge = `📱 bKash (Paid${o.transaction_id ? ' · ' + o.transaction_id : ''})`;
+      else if (pm === 'nagad') payBadge = `📱 Nagad (Paid${o.transaction_id ? ' · ' + o.transaction_id : ''})`;
+      else if (pm === 'card')  payBadge = `💳 Card (Paid${o.transaction_id ? ' · ' + o.transaction_id : ''})`;
+
+      return `
+      <div class="order-card" id="order-${o.id}">
+        <div class="order-card-header" onclick="toggleOrder('${o.id}')">
+          <div>
+            <div class="order-card-id">${o.id}</div>
+            <div class="order-card-meta">
+              📅 ${formatDate(o.date)} &nbsp;·&nbsp; ${o.items.length} item(s) &nbsp;·&nbsp; ${payBadge}
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <strong style="font-size:var(--fs-lg);color:var(--primary)">৳${o.total.toLocaleString()}</strong>
+            <span class="order-status ${STATUS_CLASS[o.status] || 'status-pending'}">${(o.status || 'pending').charAt(0).toUpperCase()+(o.status || 'pending').slice(1)}</span>
+            <span class="order-card-chevron" style="color:var(--text-muted)">▾</span>
+          </div>
+        </div>
+        <div class="order-card-body">
+          <div class="order-items-list">
+            ${o.items.map(item => {
+              const p = item.product || {};
+              return `
+                <div class="order-item-row">
+                  <img class="order-item-img" src="${p.img || 'https://placehold.co/50x45/0d4f5c/white?text=Fish'}" alt="${p.name_en || 'Fish'}" onerror="this.src='https://placehold.co/50x45/0d4f5c/white?text=Fish'">
+                  <div>
+                    <div class="order-item-name">${p.name_en || item.name_en || 'Fish Product'}</div>
+                    <div class="order-item-detail">${item.quantity_kg || item.qty_kg || 1} kg × ৳${item.price || item.price_per_kg || 0}/kg</div>
+                  </div>
+                  <div class="order-item-price">৳${((item.quantity_kg || item.qty_kg || 1) * (item.price || item.price_per_kg || 0)).toLocaleString()}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div style="background:var(--bg-secondary);border-radius:var(--r);padding:var(--sp-4);margin-bottom:var(--sp-4)">
+            <div style="font-size:var(--fs-sm);color:var(--text-secondary)">
+              📍 <strong>Delivery:</strong> ${o.delivery_address || o.address || 'Address provided'}, ${o.district || 'Dhaka'}
+            </div>
+            <div style="font-size:var(--fs-sm);color:var(--text-secondary);margin-top:var(--sp-2)">
+              💳 <strong>Payment Method:</strong> ${payBadge}
+            </div>
+          </div>
+          <div class="flex gap-3">
+            ${o.status === 'delivered' ? `<button class="btn btn-outline btn-sm" onclick="reorder('${o.id}')">🔄 Reorder</button>` : ''}
+            <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ Invoice</button>
+          </div>
+        </div>
+      </div>
+      `;
+    }).join('');
+  }
+
+  window.toggleOrder = function(id) {
+    document.getElementById(`order-${id}`)?.classList.toggle('expanded');
+  };
+
+  window.filterOrders = function(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    const filtered = filter === 'all' ? allOrders : allOrders.filter(o => o.status === filter);
+    renderOrders(filtered);
+  };
+
+  window.reorder = function(orderId) {
+    const order = allOrders.find(o => o.id === orderId);
+    if (!order) return;
+    if (order.items && order.items.length) {
+      order.items.forEach(it => {
+        const prod = it.product || { id: it.product_id, name_en: it.name_en || 'Fish', price_per_kg: it.price || it.price_per_kg || 500, img: '' };
+        addToCart(prod, it.quantity_kg || it.qty_kg || 1, 'whole');
+      });
+    }
+    showToast('Items added to cart! 🛒', 'success', 'Reordered');
+    setTimeout(() => window.location.href = '../cart.html', 800);
+  };
+
+  loadOrders();
+</script>
+</body>
+</html>

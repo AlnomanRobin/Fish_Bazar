@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cart — FishBazar Bangladesh</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/cart.css">
+</head>
+<body>
+
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="index.html" class="navbar-logo"><div class="logo-icon"><img src="logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span class="logo-bn">মাছের বাজার</span></div></a>
+    <div class="navbar-actions">
+      <div id="nav-guest" class="flex gap-3 items-center"><a href="login.html" class="navbar-btn">Login</a></div>
+      <div id="nav-user" class="flex gap-3 items-center hidden">
+        <div class="nav-dropdown">
+          <div class="navbar-avatar" id="nav-avatar" style="cursor:pointer">U</div>
+          <div class="nav-dropdown-menu">
+            <a href="#" class="nav-dropdown-item" id="nav-dashboard">📊 Dashboard</a>
+            <span class="nav-dropdown-item danger" data-action="logout">🚪 Logout</span>
+          </div>
+        </div>
+      </div>
+      <a href="cart.html" class="navbar-btn cart-btn">🛒 <span class="cart-badge hidden">0</span></a>
+      <div class="navbar-hamburger" id="navbar-hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</nav>
+
+<div class="cart-page page-content">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="breadcrumb-sep">›</span>
+      <span>My Cart</span>
+    </div>
+    <h1 class="cart-page-title">🛒 Shopping Cart</h1>
+
+    <!-- Empty Cart -->
+    <div id="cart-empty" class="hidden">
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🛒</div>
+        <h2>Your cart is empty</h2>
+        <p class="bn" style="font-size:var(--fs-lg)">আপনার কার্টে কোনো মাছ নেই</p>
+        <a href="shop.html" class="btn btn-primary btn-lg">Browse Fresh Fish</a>
+      </div>
+    </div>
+
+    <!-- Cart Content -->
+    <div id="cart-content" class="cart-layout hidden">
+      <!-- Items -->
+      <div>
+        <div class="cart-items-card">
+          <div class="cart-items-header">
+            <span class="cart-items-title">Cart Items (<span id="cart-item-count">0</span>)</span>
+            <span class="cart-clear-btn" onclick="handleClearCart()">🗑️ Clear All</span>
+          </div>
+          <div id="cart-items-list"></div>
+        </div>
+        <div style="margin-top:var(--sp-4)">
+          <a href="shop.html" class="btn btn-outline">← Continue Shopping</a>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div>
+        <div class="order-summary-card">
+          <h2 class="summary-title">Order Summary</h2>
+
+          <div class="district-select-wrap">
+            <div class="district-select-label">Delivery District</div>
+            <select class="form-control" id="district-select" onchange="updateDelivery()">
+              <option value="">Select your district...</option>
+            </select>
+            <div class="delivery-estimate" id="delivery-estimate" style="display:none">
+              ✓ <span id="delivery-days"></span> business day(s) delivery
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span class="amount">৳<span id="subtotal">0</span></span>
+          </div>
+          <div class="summary-row">
+            <span>Delivery Charge</span>
+            <span class="amount">৳<span id="delivery-charge">0</span></span>
+          </div>
+
+          <div style="background:rgba(13,79,92,0.06);border-radius:var(--r);padding:var(--sp-3);font-size:0.82rem;color:var(--text-secondary);margin:var(--sp-3) 0;display:flex;align-items:center;gap:8px">
+            <span style="font-size:1.1rem">💳</span>
+            <span>Pay via <strong>bKash</strong>, <strong>Nagad</strong>, <strong>Cards</strong> or <strong>Cash on Delivery</strong></span>
+          </div>
+
+          <div class="promo-input-row">
+            <input type="text" id="promo-input" placeholder="PROMO CODE" maxlength="20">
+            <button class="btn btn-outline btn-sm" onclick="applyPromo()">Apply</button>
+          </div>
+
+          <div class="summary-row total">
+            <span>Total</span>
+            <span class="amount">৳<span id="cart-total">0</span></span>
+          </div>
+
+          <button class="btn btn-primary btn-lg btn-full" onclick="proceedCheckout()" style="margin-top:var(--sp-4)" id="checkout-btn">
+            Proceed to Checkout →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { getCart, removeFromCart, updateQty, clearCart, getCartSubtotal, getCartBySeller } from './js/cart.js';
+  import { fetchDistricts } from './js/api.js';
+  import { showToast, formatBDT } from './js/main.js';
+  import './js/main.js';
+
+  let selectedDistrict = null;
+  let deliveryCharge   = 0;
+
+  async function loadDistricts() {
+    const res = await fetchDistricts();
+    if (!res.ok) return;
+    const sel = document.getElementById('district-select');
+    res.data.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value      = JSON.stringify(d);
+      opt.textContent= `${d.name} (${d.name_bn}) — ৳${d.charge}`;
+      sel.appendChild(opt);
+    });
+  }
+
+  window.updateDelivery = function() {
+    const val = document.getElementById('district-select').value;
+    if (!val) { deliveryCharge = 0; document.getElementById('delivery-estimate').style.display='none'; }
+    else {
+      selectedDistrict = JSON.parse(val);
+      deliveryCharge   = selectedDistrict.charge;
+      document.getElementById('delivery-days').textContent = selectedDistrict.days;
+      document.getElementById('delivery-estimate').style.display = 'flex';
+    }
+    document.getElementById('delivery-charge').textContent = deliveryCharge.toLocaleString();
+    updateTotals();
+  };
+
+  function updateTotals() {
+    const subtotal = getCartSubtotal();
+    const total    = subtotal + deliveryCharge;
+    document.getElementById('subtotal').textContent    = subtotal.toLocaleString();
+    document.getElementById('cart-total').textContent  = total.toLocaleString();
+  }
+
+  function renderCart() {
+    const cart = getCart();
+    const empty   = document.getElementById('cart-empty');
+    const content = document.getElementById('cart-content');
+
+    if (!cart.length) {
+      empty.classList.remove('hidden');
+      content.classList.add('hidden');
+      return;
+    }
+
+    empty.classList.add('hidden');
+    content.classList.remove('hidden');
+
+    document.getElementById('cart-item-count').textContent = cart.length;
+
+    const bySeller = getCartBySeller();
+    const itemsList= document.getElementById('cart-items-list');
+
+    itemsList.innerHTML = Object.entries(bySeller).map(([sid, group]) => `
+      <div class="cart-seller-group">
+        <div class="cart-seller-header">
+          <span class="cart-seller-icon">🏪</span>
+          <span class="cart-seller-name">${group.seller_name || 'Unknown Seller'}</span>
+        </div>
+        ${group.items.map(item => `
+          <div class="cart-item" data-key="${item.key}">
+            <img class="cart-item-img" src="${item.img}" alt="${item.name_en}" onerror="this.src='https://placehold.co/90x80/0d4f5c/white?text=Fish'">
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name_en} <span class="cart-item-name-bn">${item.name_bn}</span></div>
+              <div class="cart-item-seller">🏪 ${item.seller_name}</div>
+              <div class="cart-item-cleaning">✂️ ${item.cleaning.charAt(0).toUpperCase()+item.cleaning.slice(1)}</div>
+              <div class="cart-item-price">৳${item.price_per_kg.toLocaleString()}/kg</div>
+            </div>
+            <div class="cart-item-actions">
+              <button class="cart-item-remove" onclick="handleRemove('${item.key}')" title="Remove">🗑️</button>
+              <div class="qty-stepper" style="border-color:hsl(220,15%,88%)">
+                <button class="qty-btn" onclick="handleQtyChange('${item.key}', ${item.quantity_kg - 0.5})">−</button>
+                <span class="qty-value" style="min-width:45px;font-size:0.85rem">${item.quantity_kg} kg</span>
+                <button class="qty-btn" onclick="handleQtyChange('${item.key}', ${item.quantity_kg + 0.5})">+</button>
+              </div>
+              <div class="cart-item-subtotal">৳${(item.price_per_kg * item.quantity_kg).toLocaleString()}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+
+    updateTotals();
+  }
+
+  window.handleRemove = function(key) {
+    removeFromCart(key);
+    showToast('Item removed from cart', 'info');
+    renderCart();
+  };
+
+  window.handleQtyChange = function(key, newQty) {
+    if (newQty < 0.5) { handleRemove(key); return; }
+    updateQty(key, newQty);
+    renderCart();
+  };
+
+  window.handleClearCart = function() {
+    if (confirm('Remove all items from cart?')) {
+      clearCart();
+      renderCart();
+      showToast('Cart cleared', 'info');
+    }
+  };
+
+  window.applyPromo = function() {
+    const code = document.getElementById('promo-input').value.trim().toUpperCase();
+    if (code === 'FISH10') showToast('Promo code applied! (Demo)', 'success', 'Promo Applied');
+    else showToast('Invalid promo code', 'error', 'Invalid Code');
+  };
+
+  window.proceedCheckout = function() {
+    if (!selectedDistrict) { showToast('Please select your delivery district first!', 'warning', 'Select District'); return; }
+    sessionStorage.setItem('fb_checkout_district', JSON.stringify(selectedDistrict));
+    window.location.href = 'checkout.html';
+  };
+
+  window.addEventListener('cart-updated', renderCart);
+  loadDistricts();
+  renderCart();
+</script>
+</body>
+</html>

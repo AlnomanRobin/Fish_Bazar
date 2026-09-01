@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Dashboard — FishBazar</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+</head>
+<body>
+
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo"><div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span class="logo-bn">মাছের বাজার</span></div></a>
+    <div class="navbar-actions">
+      <div class="nav-dropdown">
+        <div class="navbar-avatar" id="nav-avatar" style="cursor:pointer;background:var(--seller)">S</div>
+        <div class="nav-dropdown-menu">
+          <a href="../index.html" class="nav-dropdown-item">🏠 View Store</a>
+          <span class="nav-dropdown-item danger" data-action="logout">🚪 Logout</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout seller-dash">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><span class="sidebar-role-badge seller">🏪 Seller</span></div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar" style="background:var(--seller)">S</div>
+      <div>
+        <div class="sidebar-user-name" id="sidebar-name">Seller</div>
+        <div class="sidebar-user-email" id="sidebar-shop">My Shop</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-label">Dashboard</div>
+      <a href="dashboard.html" class="sidebar-nav-link active"><span class="sidebar-nav-icon">📊</span> Overview</a>
+      <div class="sidebar-nav-label">Products</div>
+      <a href="products.html"    class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> My Products</a>
+      <a href="add-product.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">➕</span> Add Product</a>
+      <div class="sidebar-nav-label">Orders</div>
+      <a href="orders.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">📦</span> Orders <span class="sidebar-nav-badge" id="pending-badge">5</span></a>
+      <div class="sidebar-nav-label">Store</div>
+      <a href="../shop.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">🏪</span> View Storefront</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dashboard-content">
+    <div class="flex-between" style="margin-bottom:var(--sp-8)">
+      <div>
+        <h1 style="font-size:var(--fs-3xl);font-weight:800">Seller Dashboard</h1>
+        <p style="color:var(--text-muted);font-family:var(--font-bn)" id="shop-name-header">আমার দোকান</p>
+      </div>
+      <a href="add-product.html" class="btn btn-seller btn-lg">+ Add New Fish</a>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="kpi-grid" style="margin-bottom:var(--sp-8)">
+      <div class="kpi-card">
+        <div class="kpi-header"><span class="kpi-label">Total Revenue</span><div class="kpi-icon purple">৳</div></div>
+        <div class="kpi-value" id="kpi-revenue">—</div>
+        <div class="kpi-change up">↑ All time sales</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header"><span class="kpi-label">Active Orders</span><div class="kpi-icon teal">📦</div></div>
+        <div class="kpi-value" id="kpi-orders">—</div>
+        <div class="kpi-change">Needs processing</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header"><span class="kpi-label">Total Products</span><div class="kpi-icon green">🐟</div></div>
+        <div class="kpi-value" id="kpi-products">—</div>
+        <div class="kpi-change">In your store</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header"><span class="kpi-label">Shop Rating</span><div class="kpi-icon gold">⭐</div></div>
+        <div class="kpi-value" id="kpi-rating">4.8</div>
+        <div class="kpi-change up">Based on reviews</div>
+      </div>
+    </div>
+
+    <!-- Quick Action / Alert Banner -->
+    <div class="kpi-card" style="margin-bottom:var(--sp-8);background:linear-gradient(135deg,rgba(13,79,92,0.06),rgba(240,165,0,0.06));border-left:4px solid var(--secondary)">
+      <div class="flex-between">
+        <div>
+          <div style="font-weight:700;font-size:var(--fs-lg);margin-bottom:var(--sp-1)">🚀 Boost Your Sales Today!</div>
+          <div style="font-size:var(--fs-sm);color:var(--text-secondary)">Keep your fish stock and pricing updated for better customer satisfaction.</div>
+        </div>
+        <a href="add-product.html" class="btn btn-primary btn-sm">+ Add Fish</a>
+      </div>
+    </div>
+
+    <!-- Revenue Chart -->
+    <div class="chart-card" style="margin-bottom:var(--sp-8)">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">📈 Monthly Revenue Overview</div>
+          <div style="font-size:var(--fs-xs);color:var(--text-muted)">Earnings in BDT (Last 6 Months)</div>
+        </div>
+        <span class="badge badge-success">Live Data</span>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="revenue-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="table-card" style="margin-bottom:var(--sp-8)">
+      <div class="table-header">
+        <span class="table-title">📦 Recent Customer Orders</span>
+        <a href="orders.html" class="btn btn-outline btn-sm">All Orders</a>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading orders...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Quick Links Grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--sp-4)">
+      <a href="products.html" class="kpi-card" style="text-align:center;padding:var(--sp-5);text-decoration:none;cursor:pointer">
+        <div style="font-size:2rem;margin-bottom:var(--sp-2)">🐟</div>
+        <div style="font-weight:700">Manage Products</div>
+      </a>
+      <a href="add-product.html" class="kpi-card" style="text-align:center;padding:var(--sp-5);text-decoration:none;cursor:pointer">
+        <div style="font-size:2rem;margin-bottom:var(--sp-2)">➕</div>
+        <div style="font-weight:700">Add New Fish</div>
+      </a>
+      <a href="orders.html" class="kpi-card" style="text-align:center;padding:var(--sp-5);text-decoration:none;cursor:pointer">
+        <div style="font-size:2rem;margin-bottom:var(--sp-2)">📦</div>
+        <div style="font-weight:700">View Orders</div>
+      </a>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import { fetchSellerStats, fetchSellerOrders } from '../js/api.js';
+  import { requireRole, getUser } from '../js/auth.js';
+  import { showToast, formatDate, animateCount } from '../js/main.js';
+  import '../js/main.js';
+
+  requireRole('seller');
+
+  const user = getUser();
+  if (user) {
+    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'S';
+    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'S';
+    document.getElementById('sidebar-name').textContent   = user.name || 'Seller';
+    document.getElementById('sidebar-shop').textContent   = user.shop_name || 'My Shop';
+    document.getElementById('shop-name-header').textContent = user.shop_name || 'আমার দোকান';
+  }
+
+  const STATUS_CLASS = { pending:'status-pending', confirmed:'status-confirmed', shipped:'status-shipped', delivered:'status-delivered', cancelled:'status-cancelled' };
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  async function loadStats() {
+    const res = await fetchSellerStats(user?.seller_id);
+    if (!res.ok || !res.data) return;
+    const s = res.data;
+
+    const elRevenue = document.getElementById('kpi-revenue') || document.getElementById('kpi-earnings');
+    const elOrders = document.getElementById('kpi-orders');
+    const elProducts = document.getElementById('kpi-products') || document.getElementById('kpi-listings');
+    const elPending = document.getElementById('kpi-pending');
+    const elPendingBadge = document.getElementById('pending-badge');
+
+    if (elRevenue) {
+      animateCount(elRevenue, s.total_earnings);
+      elRevenue.textContent = '৳' + s.total_earnings.toLocaleString();
+    }
+    if (elOrders) elOrders.textContent = s.orders_this_month;
+    if (elProducts) elProducts.textContent = s.active_listings;
+    if (elPending) elPending.textContent = s.pending_orders;
+    if (elPendingBadge) elPendingBadge.textContent = s.pending_orders;
+
+    // Top products
+    const topList = document.getElementById('top-products-list');
+    if (topList) {
+      topList.innerHTML = (s.top_products || []).map((p, i) => `
+        <div style="display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-3) 0;border-bottom:1px dashed hsl(220,15%,92%)">
+          <span style="font-size:1.25rem">${['🥇','🥈','🥉'][i]}</span>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:var(--fs-sm)">${p.name_en}</div>
+            <div style="font-size:var(--fs-xs);color:var(--text-muted)">৳${p.price_per_kg}/kg</div>
+          </div>
+          <span class="badge badge-success">Active</span>
+        </div>
+      `).join('');
+    }
+
+    // Draw chart
+    if (s.monthly_earnings) {
+      drawChart(s.monthly_earnings);
+    }
+  }
+
+  function drawChart(data) {
+    const canvas = document.getElementById('revenue-chart') || document.getElementById('earnings-chart');
+    if (!canvas) return;
+    const ctx    = canvas.getContext('2d');
+    if (!ctx) return;
+    canvas.width  = canvas.offsetWidth || 500;
+    canvas.height = 220;
+
+    const max    = Math.max(...data);
+    const pad    = { top:20, right:20, bottom:40, left:60 };
+    const W      = canvas.width  - pad.left - pad.right;
+    const H      = canvas.height - pad.top  - pad.bottom;
+    const barW   = W / data.length - 8;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+    ctx.lineWidth   = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = pad.top + H - (i / 4) * H;
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + W, y); ctx.stroke();
+      ctx.fillStyle = 'hsl(220,10%,60%)';
+      ctx.font      = '11px Inter, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('৳' + Math.round((max * i / 4) / 1000) + 'k', pad.left - 8, y + 4);
+    }
+
+    // Bars with gradient
+    data.forEach((val, i) => {
+      const x = pad.left + i * (W / data.length) + 4;
+      const h = (val / max) * H;
+      const y = pad.top + H - h;
+
+      const grad = ctx.createLinearGradient(0, y, 0, y + h);
+      grad.addColorStop(0, 'hsl(262,70%,55%)');
+      grad.addColorStop(1, 'hsl(262,70%,75%)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, barW, h, [4, 4, 0, 0]);
+      ctx.fill();
+
+      // Month label
+      ctx.fillStyle = 'hsl(220,10%,55%)';
+      ctx.font      = '10px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(MONTHS[i], x + barW / 2, pad.top + H + 18);
+    });
+  }
+
+  async function loadRecentOrders() {
+    const res = await fetchSellerOrders(user?.seller_id);
+    if (!res.ok || !res.data) return;
+    const orders = res.data.slice(0, 5);
+    const tbody  = document.getElementById('orders-tbody');
+    if (!orders.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">No orders yet</td></tr>'; return; }
+    tbody.innerHTML = orders.map(o => {
+      const item = o.items?.[0];
+      return `
+        <tr>
+          <td><strong>${o.id}</strong></td>
+          <td>${o.customer?.name || 'Customer'}</td>
+          <td>${item?.product?.name_en || '—'}</td>
+          <td>${item?.qty_kg || 0} kg</td>
+          <td><strong>৳${o.total.toLocaleString()}</strong></td>
+          <td><span class="order-status ${STATUS_CLASS[o.status]}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></td>
+          <td><a href="orders.html" class="btn btn-ghost btn-sm">Manage</a></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  loadStats();
+  loadRecentOrders();
+</script>
+</body>
+</html>

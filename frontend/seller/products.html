@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Products — FishBazar Seller</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+</head>
+<body>
+<nav class="navbar" id="main-navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo"><div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span class="logo-bn">মাছের বাজার</span></div></a>
+    <div class="navbar-actions">
+      <div class="navbar-avatar" id="nav-avatar" style="background:var(--seller);cursor:pointer">S</div>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout seller-dash">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><span class="sidebar-role-badge seller">🏪 Seller</span></div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar" style="background:var(--seller)">S</div>
+      <div><div class="sidebar-user-name" id="sidebar-name">Seller</div><div class="sidebar-user-email">My Shop</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">📊</span> Overview</a>
+      <a href="products.html"    class="sidebar-nav-link active"><span class="sidebar-nav-icon">🐟</span> My Products</a>
+      <a href="add-product.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">➕</span> Add Product</a>
+      <a href="orders.html"      class="sidebar-nav-link"><span class="sidebar-nav-icon">📦</span> Orders</a>
+    </nav>
+    <div class="sidebar-footer"><span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span></div>
+  </aside>
+
+  <main class="dashboard-content">
+    <div class="flex-between" style="margin-bottom:var(--sp-8)">
+      <div>
+        <h1 style="font-size:var(--fs-3xl);font-weight:800">🐟 My Products</h1>
+        <p style="color:var(--text-muted)">Manage your fish listings</p>
+      </div>
+      <a href="add-product.html" class="btn btn-seller btn-lg">+ Add New Product</a>
+    </div>
+
+    <!-- Search + Filter -->
+    <div class="flex gap-4" style="margin-bottom:var(--sp-5)">
+      <div class="search-box" style="max-width:320px">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="product-search" placeholder="Search your products..." oninput="filterProducts()">
+      </div>
+      <select class="form-control" id="status-filter" style="max-width:180px" onchange="filterProducts()">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">Products (<span id="product-count">0</span>)</span>
+        <div class="table-actions">
+          <button class="btn btn-ghost btn-sm" onclick="loadProducts()">🔄 Refresh</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Price/kg</th>
+              <th>Stock (kg)</th>
+              <th>Rating</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading products...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <span id="table-info">0 products</span>
+        <div class="flex gap-2">
+          <button class="page-btn" disabled>‹</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn" disabled>›</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <span class="modal-title">Delete Product</span>
+      <span class="modal-close" data-modal-close>✕</span>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete <strong id="delete-product-name"></strong>? This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-modal-close>Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { fetchSellerProducts, deleteProduct, updateProduct } from '../js/api.js';
+  import { requireRole, getUser } from '../js/auth.js';
+  import { showToast, openModal, closeModal } from '../js/main.js';
+  import '../js/main.js';
+
+  requireRole('seller');
+
+  const user = getUser();
+  if (user) {
+    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'S';
+    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'S';
+    document.getElementById('sidebar-name').textContent   = user.name || 'Seller';
+  }
+
+  let allProducts  = [];
+  let deleteTarget = null;
+
+  window.loadProducts = async function() {
+    const res = await fetchSellerProducts(user?.seller_id);
+    if (!res.ok || !res.data) return;
+    allProducts = res.data;
+    renderProducts(allProducts);
+  };
+
+  function renderProducts(products) {
+    document.getElementById('product-count').textContent = products.length;
+    document.getElementById('table-info').textContent    = `${products.length} products`;
+    const tbody = document.getElementById('products-tbody');
+    if (!products.length) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--text-muted)">
+        <div style="font-size:2.5rem;margin-bottom:1rem">🐟</div>
+        No products yet. <a href="add-product.html" style="color:var(--seller);font-weight:700">Add your first product!</a>
+      </td></tr>`;
+      return;
+    }
+    tbody.innerHTML = products.map(p => `
+      <tr>
+        <td>
+          <div class="td-avatar">
+            <img class="td-img" src="${p.img}" alt="${p.name_en}" onerror="this.src='https://placehold.co/42x42/0d4f5c/white?text=F'">
+            <div>
+              <div class="td-name">${p.name_en}</div>
+              <div class="td-sub" style="font-family:var(--font-bn)">${p.name_bn}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge badge-muted">${p.category?.name_en || '—'}</span></td>
+        <td><strong>৳${p.price_per_kg.toLocaleString()}</strong></td>
+        <td>${p.stock_kg} kg</td>
+        <td>⭐ ${p.rating}</td>
+        <td>
+          <button class="product-status-toggle ${p.is_featured ? 'on' : ''}" 
+            title="${p.is_featured ? 'Active' : 'Inactive'}"
+            onclick="toggleStatus(${p.id}, this)"></button>
+        </td>
+        <td>
+          <div class="table-actions-cell">
+            <a href="add-product.html?edit=${p.slug}" class="btn btn-outline btn-sm">✏️ Edit</a>
+            <button class="btn btn-danger btn-sm" onclick="handleDelete('${p.slug}', '${p.name_en}')">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  window.filterProducts = function() {
+    const q      = document.getElementById('product-search').value.toLowerCase();
+    const status = document.getElementById('status-filter').value;
+    let list = allProducts.filter(p =>
+      p.name_en.toLowerCase().includes(q) || p.name_bn.includes(q)
+    );
+    if (status === 'active')   list = list.filter(p => p.is_featured);
+    if (status === 'inactive') list = list.filter(p => !p.is_featured);
+    renderProducts(list);
+  };
+
+  window.toggleStatus = function(id, btn) {
+    btn.classList.toggle('on');
+    const isOn = btn.classList.contains('on');
+    showToast(`Product ${isOn ? 'activated' : 'deactivated'}`, isOn ? 'success' : 'info');
+  };
+
+  window.handleDelete = function(slug, name) {
+    deleteTarget = slug;
+    document.getElementById('delete-product-name').textContent = name;
+    openModal('delete-modal');
+  };
+
+  window.confirmDelete = async function() {
+    if (!deleteTarget) return;
+    const res = await deleteProduct(deleteTarget);
+    if (res.ok) {
+      showToast('Product deleted', 'success');
+      closeModal('delete-modal');
+      loadProducts();
+    } else {
+      showToast('Failed to delete product', 'error');
+    }
+    deleteTarget = null;
+  };
+
+  loadProducts();
+</script>
+</body>
+</html>
