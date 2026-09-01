@@ -95,7 +95,7 @@
           </div>
 
           <div class="flex gap-3">
-            <button type="button" class="btn btn-primary btn-md" onclick="saveProfileChanges()">💾 Save Profile</button>
+            <button type="button" class="btn btn-primary btn-md" onclick="saveAllCustomerData()" id="btn-save-all">💾 Save Profile</button>
           </div>
         </div>
 
@@ -114,22 +114,22 @@
         <h3 class="profile-section-title">👤 Personal Information</h3>
         <p class="profile-section-desc">আপনার ব্যক্তিগত তথ্যসমূহ আপডেট করুন</p>
         
-        <form onsubmit="event.preventDefault(); saveProfileChanges();">
+        <form id="form-cust-personal" onsubmit="event.preventDefault(); savePersonalInfo();">
           <div class="form-row" style="margin-bottom:var(--sp-4)">
             <div class="form-group">
               <label class="form-label" for="cust-name">Full Name (পূর্ণ নাম) *</label>
-              <input type="text" class="form-control" id="cust-name" required placeholder="e.g. Arif Rahman">
+              <input type="text" class="form-control" id="cust-name" placeholder="e.g. Arif Rahman">
             </div>
             <div class="form-group">
-              <label class="form-label" for="cust-email">Email Address (ইমেইল) *</label>
-              <input type="email" class="form-control" id="cust-email" required placeholder="arif@example.com">
+              <label class="form-label" for="cust-email">Email Address (ইমেইল)</label>
+              <input type="email" class="form-control" id="cust-email" placeholder="arif@example.com">
             </div>
           </div>
 
           <div class="form-row" style="margin-bottom:var(--sp-4)">
             <div class="form-group">
-              <label class="form-label" for="cust-phone">Primary Phone Number (মোবাইল নম্বর) *</label>
-              <input type="tel" class="form-control" id="cust-phone" required placeholder="+880 17XXXXXXXX">
+              <label class="form-label" for="cust-phone">Primary Phone Number (মোবাইল নম্বর)</label>
+              <input type="tel" class="form-control" id="cust-phone" placeholder="+880 17XXXXXXXX">
             </div>
             <div class="form-group">
               <label class="form-label" for="cust-alt-phone">Alternative Phone (বিকল্প নম্বর)</label>
@@ -153,7 +153,7 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary">Save Personal Info</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-personal">💾 Save Personal Info</button>
         </form>
       </div>
     </div>
@@ -164,15 +164,15 @@
         <h3 class="profile-section-title">📍 Default Delivery Address</h3>
         <p class="profile-section-desc">মাছ ডেলিভারির জন্য আপনার স্থায়ী বা বর্তমান ঠিকানা</p>
         
-        <form onsubmit="event.preventDefault(); saveProfileChanges();">
+        <form id="form-cust-address" onsubmit="event.preventDefault(); saveAddressInfo();">
           <div class="form-group" style="margin-bottom:var(--sp-4)">
-            <label class="form-label" for="cust-street">Street Address (রাস্তা / বাড়ি নং / এলাকা) *</label>
+            <label class="form-label" for="cust-street">Street Address (রাস্তা / বাড়ি নং / এলাকা)</label>
             <textarea class="form-control" id="cust-street" rows="3" placeholder="House 12, Road 4, Block B, Mirpur 10..."></textarea>
           </div>
 
           <div class="form-row" style="margin-bottom:var(--sp-4)">
             <div class="form-group">
-              <label class="form-label" for="cust-district">District (জেলা) *</label>
+              <label class="form-label" for="cust-district">District (জেলা)</label>
               <select class="form-control" id="cust-district">
                 <option value="Dhaka">Dhaka (ঢাকা)</option>
                 <option value="Chittagong">Chittagong (চট্টগ্রাম)</option>
@@ -197,7 +197,7 @@
             <input type="text" class="form-control" id="cust-delivery-note" placeholder="e.g. Call before delivery, Leave with security guard">
           </div>
 
-          <button type="submit" class="btn btn-primary">Save Address</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-address">💾 Save Address</button>
         </form>
       </div>
     </div>
@@ -224,7 +224,7 @@
             <input type="password" class="form-control" id="confirm-pass" placeholder="••••••••">
           </div>
 
-          <button type="submit" class="btn btn-primary">Update Password</button>
+          <button type="submit" class="btn btn-primary">🔒 Update Password</button>
         </form>
       </div>
     </div>
@@ -233,7 +233,7 @@
 </div>
 
 <script type="module">
-  import { requireRole, getUser, updateUserProfile, updateNavbarAuth } from '../js/auth.js';
+  import { requireRole, getUser, updateUserProfile } from '../js/auth.js';
   import { showToast } from '../js/main.js';
   import '../js/main.js';
 
@@ -242,8 +242,7 @@
   let currentAvatarData = null;
 
   function initProfilePage() {
-    const user = getUser();
-    if (!user) return;
+    const user = getUser() || {};
 
     // Populate header info
     document.getElementById('profile-display-name').textContent = user.name || 'User';
@@ -309,11 +308,6 @@
       return;
     }
 
-    if (file.size > 3 * 1024 * 1024) {
-      showToast('Image size should be less than 3MB', 'warning');
-      return;
-    }
-
     const reader = new FileReader();
     reader.onload = function(evt) {
       const base64 = evt.target.result;
@@ -338,7 +332,45 @@
     el?.classList.add('active');
   };
 
-  window.saveProfileChanges = function() {
+  // SAVE PERSONAL DETAILS
+  window.savePersonalInfo = function() {
+    const name = document.getElementById('cust-name').value.trim();
+    const email = document.getElementById('cust-email').value.trim();
+    const phone = document.getElementById('cust-phone').value.trim();
+    const alt_phone = document.getElementById('cust-alt-phone').value.trim();
+    const gender = document.getElementById('cust-gender').value;
+    const dob = document.getElementById('cust-dob').value;
+
+    if (!name) {
+      showToast('Please enter your full name', 'warning');
+      return;
+    }
+
+    const updates = { name, email, phone, alt_phone, gender, dob, avatar: currentAvatarData };
+    updateUserProfile(updates);
+
+    document.getElementById('profile-display-name').textContent = name;
+    if (email || phone) document.getElementById('profile-display-email').textContent = email || phone;
+    document.getElementById('sidebar-name').textContent = name;
+
+    showToast('Personal information saved! 👤', 'success', 'Saved');
+  };
+
+  // SAVE ADDRESS DETAILS
+  window.saveAddressInfo = function() {
+    const address = document.getElementById('cust-street').value.trim();
+    const district = document.getElementById('cust-district').value;
+    const area = document.getElementById('cust-area').value.trim();
+    const delivery_note = document.getElementById('cust-delivery-note').value.trim();
+
+    const updates = { address, street: address, district, area, delivery_note };
+    updateUserProfile(updates);
+
+    showToast('Delivery address updated! 📍', 'success', 'Saved');
+  };
+
+  // SAVE ALL DETAILS TOGETHER
+  window.saveAllCustomerData = function() {
     const name = document.getElementById('cust-name').value.trim();
     const email = document.getElementById('cust-email').value.trim();
     const phone = document.getElementById('cust-phone').value.trim();
@@ -351,32 +383,32 @@
     const area = document.getElementById('cust-area').value.trim();
     const delivery_note = document.getElementById('cust-delivery-note').value.trim();
 
-    if (!name || !phone) {
-      showToast('Name and phone number are required', 'warning');
-      return;
-    }
+    const updates = {};
+    if (name) updates.name = name;
+    if (email !== undefined) updates.email = email;
+    if (phone !== undefined) updates.phone = phone;
+    if (alt_phone !== undefined) updates.alt_phone = alt_phone;
+    if (gender !== undefined) updates.gender = gender;
+    if (dob !== undefined) updates.dob = dob;
 
-    const updates = {
-      name,
-      email,
-      phone,
-      alt_phone,
-      gender,
-      dob,
-      address,
-      street: address,
-      district,
-      area,
-      delivery_note,
-      avatar: currentAvatarData
-    };
+    if (address !== undefined) { updates.address = address; updates.street = address; }
+    if (district) updates.district = district;
+    if (area !== undefined) updates.area = area;
+    if (delivery_note !== undefined) updates.delivery_note = delivery_note;
+
+    if (currentAvatarData !== undefined) updates.avatar = currentAvatarData;
 
     updateUserProfile(updates);
-    document.getElementById('profile-display-name').textContent = name;
-    document.getElementById('profile-display-email').textContent = email || phone;
-    document.getElementById('sidebar-name').textContent = name;
 
-    showToast('Profile updated successfully! ✅', 'success', 'Saved');
+    if (name) {
+      document.getElementById('profile-display-name').textContent = name;
+      document.getElementById('sidebar-name').textContent = name;
+    }
+    if (email || phone) {
+      document.getElementById('profile-display-email').textContent = email || phone;
+    }
+
+    showToast('All profile changes saved! ✅', 'success', 'Saved');
   };
 
   window.handlePasswordChange = function() {
@@ -403,6 +435,8 @@
 
     showToast('Password updated securely! 🔒', 'success', 'Security Updated');
   };
+
+  window.saveProfileChanges = window.saveAllCustomerData;
 
   initProfilePage();
 </script>

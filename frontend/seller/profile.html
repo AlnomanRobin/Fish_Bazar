@@ -48,7 +48,7 @@
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-nav-label">Shop Management</div>
-      <a href="profile.html"     class="sidebar-nav-link active"><span class="sidebar-nav-icon">🏪</span> Shop Profile</a>
+      <a href="profile.html"     class="sidebar-nav-link active"><span class="sidebar-nav-icon">🏪</span> Shop Profile & Logo</a>
       <a href="dashboard.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">📊</span> Dashboard</a>
       <a href="products.html"    class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> My Products</a>
       <a href="add-product.html" class="sidebar-nav-link"><span class="sidebar-nav-icon">➕</span> Add New Fish</a>
@@ -95,7 +95,7 @@
           </div>
 
           <div class="flex gap-3">
-            <button type="button" class="btn btn-primary btn-md" onclick="saveSellerProfile()">💾 Save All Changes</button>
+            <button type="button" class="btn btn-primary btn-md" onclick="saveAllSellerData()" id="btn-save-all">💾 Save All Changes</button>
           </div>
         </div>
 
@@ -139,11 +139,11 @@
         <h3 class="profile-section-title">🏪 Shop Information (দোকানের বিবরণ)</h3>
         <p class="profile-section-desc">মার্কেটপ্লেসে আপনার দোকানের সাধারণ ও ব্যবসায়িক তথ্য</p>
 
-        <form onsubmit="event.preventDefault(); saveSellerProfile();">
+        <form id="form-shop-details" onsubmit="event.preventDefault(); saveShopDetails();">
           <div class="form-row" style="margin-bottom:var(--sp-4)">
             <div class="form-group">
               <label class="form-label" for="seller-shop-name">Shop Name (দোকানের নাম) *</label>
-              <input type="text" class="form-control" id="seller-shop-name" required placeholder="e.g. Padma Fresh Fish Depot">
+              <input type="text" class="form-control" id="seller-shop-name" placeholder="e.g. Padma Fresh Fish Depot">
             </div>
             <div class="form-group">
               <label class="form-label" for="seller-shop-tagline">Shop Tagline (স্লোগান / পরিচয়)</label>
@@ -193,7 +193,7 @@
             <textarea class="form-control" id="seller-bio" rows="3" placeholder="আমরা সরাসরি পদ্মা নদী থেকে প্রতিদিন সকালে তাজা ইলিশ ও রুই মাছ সংগ্রহ করে থাকি..."></textarea>
           </div>
 
-          <button type="submit" class="btn btn-seller">Save Shop Details</button>
+          <button type="submit" class="btn btn-seller" id="btn-save-shop">💾 Save Shop Details</button>
         </form>
       </div>
     </div>
@@ -204,22 +204,22 @@
         <h3 class="profile-section-title">👤 Shop Owner Information (মালিকের ব্যক্তিগত তথ্য)</h3>
         <p class="profile-section-desc">মালিকানা সংক্রান্ত তথ্য ও যোগাযোগের মাধ্যম</p>
 
-        <form onsubmit="event.preventDefault(); saveSellerProfile();">
+        <form id="form-owner-details" onsubmit="event.preventDefault(); saveOwnerDetails();">
           <div class="form-row" style="margin-bottom:var(--sp-4)">
             <div class="form-group">
               <label class="form-label" for="seller-owner-name">Owner Full Name (মালিকের পূর্ণ নাম) *</label>
-              <input type="text" class="form-control" id="seller-owner-name" required placeholder="Karim Uddin">
+              <input type="text" class="form-control" id="seller-owner-name" placeholder="Karim Uddin">
             </div>
             <div class="form-group">
-              <label class="form-label" for="seller-owner-email">Business Email (ইমেইল) *</label>
-              <input type="email" class="form-control" id="seller-owner-email" required placeholder="karim@example.com">
+              <label class="form-label" for="seller-owner-email">Business Email (ইমেইল)</label>
+              <input type="email" class="form-control" id="seller-owner-email" placeholder="karim@example.com">
             </div>
           </div>
 
           <div class="form-row" style="margin-bottom:var(--sp-4)">
             <div class="form-group">
-              <label class="form-label" for="seller-owner-phone">Direct Mobile Number (মোবাইল নম্বর) *</label>
-              <input type="tel" class="form-control" id="seller-owner-phone" required placeholder="01711-234567">
+              <label class="form-label" for="seller-owner-phone">Direct Mobile Number (মোবাইল নম্বর)</label>
+              <input type="tel" class="form-control" id="seller-owner-phone" placeholder="01711-234567">
             </div>
             <div class="form-group">
               <label class="form-label" for="seller-nid">National ID / Trade License (NID / ট্রেড লাইসেন্স নং)</label>
@@ -227,7 +227,7 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-seller">Save Owner Info</button>
+          <button type="submit" class="btn btn-seller" id="btn-save-owner">💾 Save Owner Info</button>
         </form>
       </div>
     </div>
@@ -254,7 +254,7 @@
             <input type="password" class="form-control" id="seller-confirm-pass" placeholder="••••••••">
           </div>
 
-          <button type="submit" class="btn btn-seller">Update Password</button>
+          <button type="submit" class="btn btn-seller">🔒 Update Password</button>
         </form>
       </div>
     </div>
@@ -273,8 +273,7 @@
   let currentShopLogoData = null;
 
   function initSellerProfile() {
-    const user = getUser();
-    if (!user) return;
+    const user = getUser() || {};
 
     // Header Display
     document.getElementById('profile-display-shop').textContent = user.shop_name || 'My Fresh Fish Store';
@@ -359,7 +358,7 @@
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      showToast('Please select an image file', 'warning');
+      showToast('Please select a valid image file', 'warning');
       return;
     }
 
@@ -368,7 +367,7 @@
       const base64 = evt.target.result;
       renderSellerAvatar(base64, document.getElementById('seller-owner-name').value);
       updateUserProfile({ avatar: base64 });
-      showToast('Owner photo updated successfully! 📷', 'success');
+      showToast('Owner profile photo updated! 📷', 'success');
     };
     reader.readAsDataURL(file);
   });
@@ -413,7 +412,71 @@
     el?.classList.add('active');
   };
 
-  window.saveSellerProfile = function() {
+  // SAVE ONLY SHOP DETAILS
+  window.saveShopDetails = function() {
+    const shop_name = document.getElementById('seller-shop-name').value.trim();
+    const shop_tagline = document.getElementById('seller-shop-tagline').value.trim();
+    const district = document.getElementById('seller-district').value;
+    const market_area = document.getElementById('seller-market-area').value.trim();
+    const bkash = document.getElementById('seller-bkash').value.trim();
+    const nagad = document.getElementById('seller-nagad').value.trim();
+    const address = document.getElementById('seller-address').value.trim();
+    const bio = document.getElementById('seller-bio').value.trim();
+
+    if (!shop_name) {
+      showToast('Please enter a shop name', 'warning');
+      return;
+    }
+
+    const updates = {
+      shop_name,
+      shop_tagline,
+      district,
+      market_area,
+      bkash,
+      nagad,
+      address,
+      bio,
+      shop_logo: currentShopLogoData
+    };
+
+    updateUserProfile(updates);
+    document.getElementById('profile-display-shop').textContent = shop_name;
+    document.getElementById('sidebar-shop').textContent = shop_name;
+
+    showToast('Shop details saved successfully! 🏪', 'success', 'Saved');
+  };
+
+  // SAVE ONLY OWNER INFO
+  window.saveOwnerDetails = function() {
+    const name = document.getElementById('seller-owner-name').value.trim();
+    const email = document.getElementById('seller-owner-email').value.trim();
+    const phone = document.getElementById('seller-owner-phone').value.trim();
+    const nid = document.getElementById('seller-nid').value.trim();
+
+    if (!name) {
+      showToast('Please enter the owner name', 'warning');
+      return;
+    }
+
+    const updates = {
+      name,
+      email,
+      phone,
+      nid,
+      avatar: currentAvatarData
+    };
+
+    updateUserProfile(updates);
+    const user = getUser();
+    document.getElementById('profile-display-owner').textContent = `Owner: ${name} · ${user?.district || 'Bangladesh'}`;
+    document.getElementById('sidebar-name').textContent = name;
+
+    showToast('Owner information saved! 👤', 'success', 'Saved');
+  };
+
+  // SAVE ALL DETAILS TOGETHER
+  window.saveAllSellerData = function() {
     const shop_name = document.getElementById('seller-shop-name').value.trim();
     const shop_tagline = document.getElementById('seller-shop-tagline').value.trim();
     const district = document.getElementById('seller-district').value;
@@ -428,35 +491,36 @@
     const phone = document.getElementById('seller-owner-phone').value.trim();
     const nid = document.getElementById('seller-nid').value.trim();
 
-    if (!shop_name || !name || !phone) {
-      showToast('Shop name, owner name, and phone number are required', 'warning');
-      return;
-    }
+    const updates = {};
+    if (shop_name) updates.shop_name = shop_name;
+    if (shop_tagline !== undefined) updates.shop_tagline = shop_tagline;
+    if (district) updates.district = district;
+    if (market_area !== undefined) updates.market_area = market_area;
+    if (bkash !== undefined) updates.bkash = bkash;
+    if (nagad !== undefined) updates.nagad = nagad;
+    if (address !== undefined) updates.address = address;
+    if (bio !== undefined) updates.bio = bio;
 
-    const updates = {
-      shop_name,
-      shop_tagline,
-      district,
-      market_area,
-      bkash,
-      nagad,
-      address,
-      bio,
-      name,
-      email,
-      phone,
-      nid,
-      avatar: currentAvatarData,
-      shop_logo: currentShopLogoData
-    };
+    if (name) updates.name = name;
+    if (email !== undefined) updates.email = email;
+    if (phone !== undefined) updates.phone = phone;
+    if (nid !== undefined) updates.nid = nid;
+
+    if (currentAvatarData !== undefined) updates.avatar = currentAvatarData;
+    if (currentShopLogoData !== undefined) updates.shop_logo = currentShopLogoData;
 
     updateUserProfile(updates);
-    document.getElementById('profile-display-shop').textContent = shop_name;
-    document.getElementById('profile-display-owner').textContent = `Owner: ${name} · ${district}`;
-    document.getElementById('sidebar-name').textContent = name;
-    document.getElementById('sidebar-shop').textContent = shop_name;
 
-    showToast('Shop and owner profile updated! 🎉', 'success', 'Saved');
+    if (shop_name) {
+      document.getElementById('profile-display-shop').textContent = shop_name;
+      document.getElementById('sidebar-shop').textContent = shop_name;
+    }
+    if (name) {
+      document.getElementById('profile-display-owner').textContent = `Owner: ${name} · ${district || 'Bangladesh'}`;
+      document.getElementById('sidebar-name').textContent = name;
+    }
+
+    showToast('All shop & owner changes saved! 🎉', 'success', 'Saved');
   };
 
   window.handlePasswordChange = function() {
@@ -483,6 +547,9 @@
 
     showToast('Password updated securely! 🔒', 'success', 'Security Updated');
   };
+
+  // Expose global helpers for form inline handlers
+  window.saveSellerProfile = window.saveAllSellerData;
 
   initSellerProfile();
 </script>
