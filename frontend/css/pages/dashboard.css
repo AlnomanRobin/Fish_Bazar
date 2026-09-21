@@ -1062,5 +1062,23 @@
   .profile-section-card { padding: var(--sp-5); }
 }
 
+/* Form Validation & Input Highlights */
+.form-control.has-error {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+  background-color: #fff8f8;
+  animation: fieldShake 0.3s ease-in-out;
+}
+.form-error-text {
+  font-size: var(--fs-xs);
+  color: var(--danger);
+  margin-top: var(--sp-1);
+  font-weight: 500;
+  display: block;
+}
 
-
+@keyframes fieldShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}

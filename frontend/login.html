@@ -357,8 +357,15 @@
     if (res.success) {
       showToast(`Welcome back, ${res.user.name}!`, 'success');
       const next = params.get('next');
+      const userRole = res.user.role;
+      let dest = next;
+      if (dest) {
+        if (dest.includes('/admin/') && userRole !== 'admin') dest = null;
+        if (dest.includes('/seller/') && userRole !== 'seller') dest = null;
+        if (dest.includes('/customer/') && userRole !== 'customer') dest = null;
+      }
       setTimeout(() => {
-        if (next) window.location.href = next;
+        if (dest) window.location.href = dest;
         else redirectToDashboard();
       }, 600);
     } else {

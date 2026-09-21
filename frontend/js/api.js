@@ -1,9 +1,8 @@
 /* =====================================================
-   FishBazar — Mock API Layer
-   Switch API_MODE to 'real' when Django backend is ready
+   FishBazar — API Layer (Connected to Django Backend)
    ===================================================== */
 
-const API_MODE = 'mock'; // 'mock' | 'real'
+const API_MODE = 'real'; // 'mock' | 'real'
 const BASE_URL = 'http://localhost:8000/api/v1';
 const DELAY    = 400; // ms - simulate network
 
@@ -106,7 +105,19 @@ const MOCK = {
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 async function mockOr(realFn, mockData) {
-  if (API_MODE === 'real') return realFn();
+  if (API_MODE === 'real') {
+    try {
+      const res = await realFn();
+      if (res && res.networkError) {
+        console.warn('[FishBazar API] Backend unreachable, falling back to local data.');
+        return { ok: true, data: mockData, offlineFallback: true };
+      }
+      return res;
+    } catch (err) {
+      console.warn('[FishBazar API] Request failed, falling back to local data:', err);
+      return { ok: true, data: mockData, offlineFallback: true };
+    }
+  }
   await delay(DELAY);
   return { ok: true, data: mockData };
 }
@@ -120,13 +131,17 @@ function getHeaders() {
 }
 
 async function realRequest(method, path, body=null) {
-  const res = await fetch(BASE_URL + path, {
-    method,
-    headers: getHeaders(),
-    ...(body ? { body: JSON.stringify(body) } : {})
-  });
-  const data = await res.json();
-  return { ok: res.ok, data, status: res.status };
+  try {
+    const res = await fetch(BASE_URL + path, {
+      method,
+      headers: getHeaders(),
+      ...(body ? { body: JSON.stringify(body) } : {})
+    });
+    const data = await res.json();
+    return { ok: res.ok, data, status: res.status };
+  } catch (err) {
+    return { ok: false, error: err.message, networkError: true };
+  }
 }
 
 /* -------- Public API Functions -------- */
@@ -256,7 +271,8 @@ try {
 
 // ----- Seller APIs -----
 export async function fetchSellerProducts(sellerId) {
-  return mockOr(() => realRequest('GET', '/seller/products/'),
+  const q = sellerId ? `?seller_id=${sellerId}` : '';
+  return mockOr(() => realRequest('GET', `/seller/products/${q}`),
     MOCK.products.filter(p=>p.seller_id===(sellerId||1))
       .map(p=>({...p, category:MOCK.categories.find(c=>c.id===p.category_id)}))
   );
@@ -326,7 +342,8 @@ export async function deleteProduct(slug) {
 }
 
 export async function fetchSellerOrders(sellerId) {
-  return mockOr(() => realRequest('GET', '/seller/orders/'),
+  const q = sellerId ? `?seller_id=${sellerId}` : '';
+  return mockOr(() => realRequest('GET', `/seller/orders/${q}`),
     MOCK.orders
       .filter(o => o.items.some(i => MOCK.products.find(p=>p.id===i.product_id)?.seller_id===(sellerId||1)))
       .map(o => ({
@@ -338,7 +355,8 @@ export async function fetchSellerOrders(sellerId) {
 }
 
 export async function fetchSellerStats(sellerId) {
-  return mockOr(() => realRequest('GET', '/seller/stats/'), {
+  const q = sellerId ? `?seller_id=${sellerId}` : '';
+  return mockOr(() => realRequest('GET', `/seller/stats/${q}`), {
     total_earnings: 184500,
     orders_this_month: 38,
     active_listings: MOCK.products.filter(p=>p.seller_id===(sellerId||1)).length,

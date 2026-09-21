@@ -12,9 +12,22 @@
 <body>
 <nav class="navbar" id="main-navbar">
   <div class="container navbar-inner">
-    <a href="../index.html" class="navbar-logo"><div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div><div>FishBazar <span class="logo-bn">মাছের বাজার</span></div></a>
+    <a href="../index.html" class="navbar-logo">
+      <div class="logo-icon"><img src="../logo/Logo.png" alt="FishBazar logo"></div>
+      <div>FishBazar <span class="badge badge-seller" style="font-size:0.7rem;font-weight:700">SELLER</span></div>
+    </a>
     <div class="navbar-actions">
-      <div class="navbar-avatar" id="nav-avatar" style="background:var(--seller);cursor:pointer">S</div>
+      <a href="../shop.html" class="navbar-btn desktop-only">🐟 View Store</a>
+      <div class="nav-dropdown">
+        <div class="navbar-avatar" id="nav-avatar" style="background:var(--seller);cursor:pointer">S</div>
+        <div class="nav-dropdown-menu">
+          <a href="profile.html" class="nav-dropdown-item">🏪 Shop Profile</a>
+          <a href="dashboard.html" class="nav-dropdown-item">📊 Dashboard</a>
+          <a href="products.html" class="nav-dropdown-item">🐟 My Products</a>
+          <div class="nav-dropdown-divider"></div>
+          <span class="nav-dropdown-item danger" data-action="logout">🚪 Logout</span>
+        </div>
+      </div>
     </div>
   </div>
 </nav>
@@ -24,14 +37,20 @@
     <div class="sidebar-header"><span class="sidebar-role-badge seller">🏪 Seller</span></div>
     <div class="sidebar-user">
       <div class="sidebar-avatar" id="sidebar-avatar" style="background:var(--seller)">S</div>
-      <div><div class="sidebar-user-name" id="sidebar-name">Seller</div></div>
+      <div>
+        <div class="sidebar-user-name" id="sidebar-name">Seller</div>
+        <div class="sidebar-user-email" id="sidebar-shop">My Shop</div>
+      </div>
     </div>
     <nav class="sidebar-nav">
-      <a href="dashboard.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">📊</span> Overview</a>
+      <div class="sidebar-nav-label">Shop Management</div>
       <a href="profile.html"     class="sidebar-nav-link"><span class="sidebar-nav-icon">🏪</span> Shop Profile</a>
+      <a href="dashboard.html"   class="sidebar-nav-link"><span class="sidebar-nav-icon">📊</span> Overview</a>
       <a href="products.html"    class="sidebar-nav-link"><span class="sidebar-nav-icon">🐟</span> My Products</a>
       <a href="add-product.html" class="sidebar-nav-link active"><span class="sidebar-nav-icon">➕</span> Add Product</a>
       <a href="orders.html"      class="sidebar-nav-link"><span class="sidebar-nav-icon">📦</span> Orders</a>
+      <div class="sidebar-nav-label">Storefront</div>
+      <a href="../shop.html"     class="sidebar-nav-link"><span class="sidebar-nav-icon">🌐</span> View Marketplace</a>
     </nav>
     <div class="sidebar-footer"><span class="sidebar-nav-link" data-action="logout" style="cursor:pointer"><span class="sidebar-nav-icon">🚪</span> Logout</span></div>
   </aside>
@@ -54,53 +73,57 @@
         </div>
         <div class="checkout-card-body">
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group" id="group-name-en">
               <label class="form-label" for="name-en">Product Name (English) *</label>
-              <input type="text" class="form-control" id="name-en" placeholder="e.g. Hilsa Fish">
+              <input type="text" class="form-control" id="name-en" placeholder="e.g. Padma Hilsa Fish (পদ্মার ইলিশ)" oninput="clearError('name-en')">
+              <span class="form-error-text hidden" id="err-name-en">Please enter a product name in English</span>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="name-bn">Product Name (বাংলা) *</label>
-              <input type="text" class="form-control" id="name-bn" placeholder="e.g. ইলিশ মাছ" style="font-family:var(--font-bn)">
+            <div class="form-group" id="group-name-bn">
+              <label class="form-label" for="name-bn">Product Name (বাংলা)</label>
+              <input type="text" class="form-control" id="name-bn" placeholder="e.g. তাজা পদ্মার ইলিশ মাছ" style="font-family:var(--font-bn)">
             </div>
           </div>
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group" id="group-product-category">
               <label class="form-label" for="product-category">Category *</label>
-              <select class="form-control" id="product-category">
+              <select class="form-control" id="product-category" onchange="clearError('product-category')">
                 <option value="">Select category</option>
                 <option value="1">🐟 Hilsa (ইলিশ)</option>
-                <option value="2">🦐 Shrimp (চিংড়ি)</option>
-                <option value="3">🐡 Freshwater (মিঠাপানি)</option>
-                <option value="4">🌊 Saltwater (সামুদ্রিক)</option>
+                <option value="2">🦐 Shrimp & Prawn (চিংড়ি)</option>
+                <option value="3">🐡 Freshwater Fish (মিঠাপানি)</option>
+                <option value="4">🌊 Marine / Sea Fish (সামুদ্রিক)</option>
                 <option value="5">🐠 Dried Fish (শুঁটকি)</option>
-                <option value="6">🎣 Live Fish (জীবন্ত)</option>
+                <option value="6">🎣 Live Fish (জীবন্ত মাছ)</option>
               </select>
+              <span class="form-error-text hidden" id="err-product-category">Please select a category</span>
             </div>
             <div class="form-group">
-              <label class="form-label" for="region">Origin Region</label>
-              <input type="text" class="form-control" id="region" placeholder="e.g. Padma River, Cox's Bazar">
+              <label class="form-label" for="region">Catchment / Origin Region</label>
+              <input type="text" class="form-control" id="region" placeholder="e.g. Padma River, Chandpur, Cox's Bazar">
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="description">Description</label>
-            <textarea class="form-control" id="description" rows="4" placeholder="Describe the fish — origin, taste, best recipes..."></textarea>
+            <label class="form-label" for="description">Description (বিবরণ)</label>
+            <textarea class="form-control" id="description" rows="3" placeholder="Describe the fish — origin, size, taste, freshness quality..."></textarea>
           </div>
         </div>
 
-        <!-- Pricing -->
+        <!-- Pricing & Stock -->
         <div class="checkout-card-header" style="border-top:1px solid var(--bg-secondary)">
           <div class="checkout-step-num" style="background:var(--seller)">2</div>
           <div class="checkout-step-title">Pricing & Stock</div>
         </div>
         <div class="checkout-card-body">
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group" id="group-price-per-kg">
               <label class="form-label" for="price-per-kg">Price per kg (৳) *</label>
-              <input type="number" class="form-control" id="price-per-kg" placeholder="e.g. 1200" min="1">
+              <input type="number" class="form-control" id="price-per-kg" placeholder="e.g. 1200" min="1" oninput="clearError('price-per-kg')">
+              <span class="form-error-text hidden" id="err-price-per-kg">Please enter a valid price per kg</span>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="group-stock-kg">
               <label class="form-label" for="stock-kg">Available Stock (kg) *</label>
-              <input type="number" class="form-control" id="stock-kg" placeholder="e.g. 50" min="0.5" step="0.5">
+              <input type="number" class="form-control" id="stock-kg" placeholder="e.g. 50" min="0.5" step="0.5" oninput="clearError('stock-kg')">
+              <span class="form-error-text hidden" id="err-stock-kg">Please enter available stock</span>
             </div>
           </div>
           <div class="form-group">
@@ -110,7 +133,7 @@
               <option value="12" selected>12 hours (Super Fresh)</option>
               <option value="24">24 hours (Fresh)</option>
               <option value="48">48 hours (Good)</option>
-              <option value="8760">Dried / Preserved</option>
+              <option value="8760">Dried / Preserved (শুঁটকি)</option>
             </select>
           </div>
         </div>
@@ -122,16 +145,16 @@
         </div>
         <div class="checkout-card-body">
           <div class="form-group" style="margin-bottom:var(--sp-6)">
-            <label class="form-label">Available Cleaning Options</label>
+            <label class="form-label">Available Cleaning Options (মাছ কাটার অপশন)</label>
             <div style="display:flex;gap:var(--sp-4);flex-wrap:wrap;margin-top:var(--sp-2)">
               <label style="display:flex;align-items:center;gap:var(--sp-2);cursor:pointer;font-size:var(--fs-sm)">
-                <input type="checkbox" id="opt-whole" value="whole" checked style="accent-color:var(--seller)"> 🐟 Whole Fish
+                <input type="checkbox" id="opt-whole" value="whole" checked style="accent-color:var(--seller)"> 🐟 Whole Fish (আস্ত মাছ)
               </label>
               <label style="display:flex;align-items:center;gap:var(--sp-2);cursor:pointer;font-size:var(--fs-sm)">
-                <input type="checkbox" id="opt-cleaned" value="cleaned" style="accent-color:var(--seller)"> ✂️ Cleaned & Gutted
+                <input type="checkbox" id="opt-cleaned" value="cleaned" style="accent-color:var(--seller)"> ✂️ Cleaned & Gutted (কেটে পরিষ্কার করা)
               </label>
               <label style="display:flex;align-items:center;gap:var(--sp-2);cursor:pointer;font-size:var(--fs-sm)">
-                <input type="checkbox" id="opt-fillet" value="fillet" style="accent-color:var(--seller)"> 🍽️ Fillet
+                <input type="checkbox" id="opt-fillet" value="fillet" style="accent-color:var(--seller)"> 🍽️ Fillet (ফিলে / টুকরা)
               </label>
             </div>
           </div>
@@ -139,7 +162,7 @@
           <!-- Product Image Upload / Drag & Drop -->
           <div class="form-group" style="margin-bottom:var(--sp-2)">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--sp-2);flex-wrap:wrap;gap:8px">
-              <label class="form-label" style="margin-bottom:0">Product Image (ছবি আপলোড করুন) *</label>
+              <label class="form-label" style="margin-bottom:0">Product Image (মাছের ছবি) *</label>
               <div class="img-upload-tabs">
                 <div class="img-upload-tab active" id="tab-upload" onclick="switchImgTab('upload')">📁 Drag & Drop / File</div>
                 <div class="img-upload-tab" id="tab-url" onclick="switchImgTab('url')">🔗 Image URL</div>
@@ -156,9 +179,9 @@
                 <div class="dropzone-icon">📸</div>
                 <div class="dropzone-title">Drag & drop your fish photo here, or click to browse</div>
                 <div class="dropzone-subtitle">এখানে মাছের ছবি টেনে আনুন অথবা ক্লিক করে ফাইল নির্বাচন করুন</div>
-                <div class="dropzone-hint">সব ধরণের ফরম্যাট সাপোর্টেড: JPG, PNG, WEBP, GIF, SVG, AVIF (Max 10MB)</div>
-                <div class="dropzone-browse-btn">
-                  <button type="button" class="btn btn-seller btn-sm" style="pointer-events:none">
+                <div class="dropzone-hint">সব ধরণের ফরম্যাট সাপোর্টেড: JPG, PNG, WEBP, GIF, SVG (Max 10MB)</div>
+                <div class="dropzone-browse-btn" style="margin-top:12px">
+                  <button type="button" class="btn btn-seller btn-sm" onclick="event.stopPropagation(); document.getElementById('file-input').click()">
                     📁 Choose Photo File
                   </button>
                 </div>
@@ -172,7 +195,7 @@
             </div>
 
             <!-- Selected Image Preview Card -->
-            <div id="img-preview-card" class="img-preview-card hidden">
+            <div id="img-preview-card" class="img-preview-card hidden" style="margin-top:12px">
               <img id="preview-img" src="" alt="Fish Preview" class="img-preview-thumb">
               <div class="img-preview-meta">
                 <div class="img-preview-name" id="preview-filename">fish-photo.jpg</div>
@@ -181,7 +204,7 @@
                   <span class="badge badge-muted" id="preview-size">Ready</span>
                 </div>
               </div>
-              <div class="img-preview-actions">
+              <div class="img-preview-actions" style="display:flex;gap:8px">
                 <button type="button" class="btn btn-outline btn-sm" onclick="triggerChangeImage()">🔄 Change</button>
                 <button type="button" class="btn btn-danger btn-sm" onclick="removeImage()">🗑️ Remove</button>
               </div>
@@ -190,9 +213,9 @@
         </div>
 
         <!-- Submit Buttons -->
-        <div style="padding:var(--sp-6);border-top:1px solid var(--bg-secondary);display:flex;gap:var(--sp-4)">
-          <button class="btn btn-ghost btn-lg" onclick="saveDraft()">💾 Save as Draft</button>
-          <button class="btn btn-seller btn-lg flex-1" onclick="publishProduct()">🚀 Publish Product</button>
+        <div style="padding:var(--sp-6);border-top:1px solid var(--bg-secondary);display:flex;gap:var(--sp-4);flex-wrap:wrap">
+          <button type="button" class="btn btn-ghost btn-lg" id="btn-save-draft" onclick="saveDraft()">💾 Save as Draft</button>
+          <button type="button" class="btn btn-seller btn-lg flex-1" id="btn-publish-product" onclick="publishProduct()" style="min-width:200px">🚀 Publish Product</button>
         </div>
       </div>
     </div>
@@ -207,16 +230,46 @@
 
   requireRole('seller');
 
-  const user   = getUser();
+  const user = getUser() || {};
   const params = new URLSearchParams(window.location.search);
   const editSlug = params.get('edit');
   let isEdit = false;
   let currentImageSrc = '';
 
   if (user) {
-    document.getElementById('nav-avatar').textContent     = user.name?.charAt(0).toUpperCase() || 'S';
-    document.getElementById('sidebar-avatar').textContent = user.name?.charAt(0).toUpperCase() || 'S';
-    document.getElementById('sidebar-name').textContent   = user.name || 'Seller';
+    const navAvatar = document.getElementById('nav-avatar');
+    const sidebarAvatar = document.getElementById('sidebar-avatar');
+    if (user.avatar) {
+      if (navAvatar) { navAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`; navAvatar.style.background = 'transparent'; }
+      if (sidebarAvatar) { sidebarAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`; sidebarAvatar.style.background = 'transparent'; }
+    } else {
+      if (navAvatar) navAvatar.textContent = user.name?.charAt(0).toUpperCase() || 'S';
+      if (sidebarAvatar) sidebarAvatar.textContent = user.name?.charAt(0).toUpperCase() || 'S';
+    }
+    document.getElementById('sidebar-name').textContent = user.name || 'Seller';
+    document.getElementById('sidebar-shop').textContent = user.shop_name || 'My Shop';
+  }
+
+  // Helper to clear error highlights
+  window.clearError = function(id) {
+    const input = document.getElementById(id);
+    const errText = document.getElementById(`err-${id}`);
+    if (input) input.classList.remove('has-error');
+    if (errText) errText.classList.add('hidden');
+  };
+
+  function markError(id, msg) {
+    const input = document.getElementById(id);
+    const errText = document.getElementById(`err-${id}`);
+    if (input) {
+      input.classList.add('has-error');
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      input.focus();
+    }
+    if (errText) {
+      if (msg) errText.textContent = msg;
+      errText.classList.remove('hidden');
+    }
   }
 
   // Tab switching (File Upload vs URL)
@@ -232,7 +285,7 @@
 
   // Drag & drop listeners
   ['dragenter', 'dragover'].forEach(name => {
-    dropzone.addEventListener(name, (e) => {
+    dropzone?.addEventListener(name, (e) => {
       e.preventDefault();
       e.stopPropagation();
       dropzone.classList.add('dragover');
@@ -240,21 +293,21 @@
   });
 
   ['dragleave', 'drop'].forEach(name => {
-    dropzone.addEventListener(name, (e) => {
+    dropzone?.addEventListener(name, (e) => {
       e.preventDefault();
       e.stopPropagation();
       dropzone.classList.remove('dragover');
     });
   });
 
-  dropzone.addEventListener('drop', (e) => {
+  dropzone?.addEventListener('drop', (e) => {
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
       processFile(files[0]);
     }
   });
 
-  fileInput.addEventListener('change', (e) => {
+  fileInput?.addEventListener('change', (e) => {
     if (e.target.files && e.target.files.length > 0) {
       processFile(e.target.files[0]);
     }
@@ -300,12 +353,12 @@
     const sizeEl = document.getElementById('preview-size');
     const formatEl = document.getElementById('preview-format');
 
-    previewImg.src = src;
-    fileNameEl.textContent = name;
-    sizeEl.textContent = sizeText;
-    formatEl.textContent = formatText;
-    previewCard.classList.remove('hidden');
-    dropzone.style.display = 'none';
+    if (previewImg) previewImg.src = src;
+    if (fileNameEl) fileNameEl.textContent = name;
+    if (sizeEl) sizeEl.textContent = sizeText;
+    if (formatEl) formatEl.textContent = formatText;
+    if (previewCard) previewCard.classList.remove('hidden');
+    if (dropzone) dropzone.style.display = 'none';
   }
 
   window.triggerChangeImage = function() {
@@ -323,7 +376,8 @@
     document.getElementById('product-img-url').value = '';
     fileInput.value = '';
     document.getElementById('img-preview-card').classList.add('hidden');
-    dropzone.style.display = 'block';
+    if (dropzone) dropzone.style.display = 'block';
+    showToast('Image removed', 'info');
   };
 
   function formatBytes(bytes) {
@@ -352,7 +406,7 @@
         if (p.img) {
           currentImageSrc = p.img;
           document.getElementById('product-img').value = p.img;
-          displayPreview(p.img, p.name_en + ' Photo', 'Saved Product Image', 'IMAGE');
+          displayPreview(p.img, (p.name_en || 'Product') + ' Photo', 'Saved Product Image', 'IMAGE');
         }
         p.cleaning_options?.forEach(opt => {
           const el = document.getElementById(`opt-${opt}`);
@@ -364,54 +418,114 @@
 
   function getFormData(isDraft = false) {
     const opts = ['whole','cleaned','fillet'].filter(o => document.getElementById(`opt-${o}`)?.checked);
+    const nameEn = document.getElementById('name-en').value.trim();
+    let nameBn = document.getElementById('name-bn').value.trim();
+    if (!nameBn && nameEn) nameBn = nameEn; // Auto-fallback
+
     return {
-      name_en:          document.getElementById('name-en').value.trim(),
-      name_bn:          document.getElementById('name-bn').value.trim(),
-      category_id:      +document.getElementById('product-category').value,
-      region:           document.getElementById('region').value.trim(),
+      name_en:          nameEn,
+      name_bn:          nameBn,
+      category_id:      +document.getElementById('product-category').value || 1,
+      region:           document.getElementById('region').value.trim() || 'Bangladesh',
       description:      document.getElementById('description').value.trim(),
-      price_per_kg:     +document.getElementById('price-per-kg').value,
-      stock_kg:         +document.getElementById('stock-kg').value,
-      freshness_hours:  +document.getElementById('freshness-hours').value,
+      price_per_kg:     +document.getElementById('price-per-kg').value || 0,
+      stock_kg:         +document.getElementById('stock-kg').value || 0,
+      freshness_hours:  +document.getElementById('freshness-hours').value || 12,
       img:              document.getElementById('product-img').value.trim() || currentImageSrc || 'https://images.unsplash.com/photo-1510130387422-82bed34b37e9?w=600&q=80',
-      cleaning_options: opts,
+      cleaning_options: opts.length ? opts : ['whole'],
       is_draft:         isDraft,
+      is_active:        !isDraft,
     };
   }
 
   function validate(data) {
-    if (!data.name_en) { showToast('Product name (English) is required', 'warning'); return false; }
-    if (!data.name_bn) { showToast('Product name (বাংলা) is required', 'warning'); return false; }
-    if (!data.category_id) { showToast('Please select a category', 'warning'); return false; }
-    if (!data.price_per_kg || data.price_per_kg <= 0) { showToast('Enter a valid price', 'warning'); return false; }
-    if (!data.stock_kg || data.stock_kg <= 0) { showToast('Enter available stock', 'warning'); return false; }
-    return true;
+    let isValid = true;
+    if (!data.name_en) {
+      markError('name-en', 'Please enter a product name in English');
+      isValid = false;
+    }
+    if (!document.getElementById('product-category').value) {
+      markError('product-category', 'Please select a category');
+      isValid = false;
+    }
+    if (!data.price_per_kg || data.price_per_kg <= 0) {
+      markError('price-per-kg', 'Please enter a valid price per kg');
+      isValid = false;
+    }
+    if (!data.stock_kg || data.stock_kg <= 0) {
+      markError('stock-kg', 'Please enter available stock in kg');
+      isValid = false;
+    }
+
+    if (!isValid) {
+      showToast('Please fill all required fields highlighted in red', 'warning');
+    }
+    return isValid;
   }
 
   window.saveDraft = async function() {
     const data = getFormData(true);
-    if (!data.name_en) { showToast('Enter at least a product name', 'warning'); return; }
-    const res = isEdit ? await updateProduct(editSlug, data) : await createProduct(data);
-    if (res.ok) { showToast('Draft saved!', 'success'); }
-    else { showToast('Failed to save draft', 'error'); }
+    if (!data.name_en) {
+      markError('name-en', 'Please enter a product name');
+      showToast('Enter at least a product name to save as draft', 'warning');
+      return;
+    }
+
+    const btn = document.getElementById('btn-save-draft');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    try {
+      const res = isEdit ? await updateProduct(editSlug, data) : await createProduct(data);
+      if (res.ok) {
+        showToast('Draft saved successfully! 💾', 'success');
+      } else {
+        showToast('Failed to save draft', 'error');
+      }
+    } catch(err) {
+      showToast('Error saving draft', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Save as Draft';
+    }
   };
 
   window.publishProduct = async function() {
     const data = getFormData(false);
     if (!validate(data)) return;
 
-    const btn = document.querySelector('[onclick="publishProduct()"]');
-    btn.disabled = true; btn.textContent = 'Publishing...';
+    const btn = document.getElementById('btn-publish-product');
+    btn.disabled = true;
+    btn.textContent = '🚀 Publishing Product...';
 
-    const res = isEdit ? await updateProduct(editSlug, data) : await createProduct(data);
-    if (res.ok) {
-      showToast(isEdit ? 'Product updated!' : 'Product published! 🎉', 'success');
-      setTimeout(() => window.location.href = 'products.html', 1000);
-    } else {
-      showToast('Failed to publish product', 'error');
-      btn.disabled = false; btn.textContent = '🚀 Publish Product';
+    try {
+      const res = isEdit ? await updateProduct(editSlug, data) : await createProduct(data);
+      if (res.ok) {
+        showToast(isEdit ? 'Product updated successfully! ✅' : 'Product published successfully! 🎉', 'success', 'Success');
+        setTimeout(() => {
+          window.location.href = 'products.html';
+        }, 800);
+      } else {
+        showToast('Failed to publish product', 'error');
+        btn.disabled = false;
+        btn.textContent = '🚀 Publish Product';
+      }
+    } catch(err) {
+      showToast('An unexpected error occurred while publishing', 'error');
+      btn.disabled = false;
+      btn.textContent = '🚀 Publish Product';
     }
   };
+
+  // Add click listeners to buttons
+  document.getElementById('btn-publish-product')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    publishProduct();
+  });
+  document.getElementById('btn-save-draft')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    saveDraft();
+  });
 </script>
 </body>
 </html>
